@@ -1,2 +1,3 @@
--Battleship game (Work in progress)
--A TDD based approach
+# Battleship game
+## Work in progress
+## A TDD based approach
