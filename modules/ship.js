@@ -16,6 +16,10 @@ class Ship {
         }
         return false;
     }
+
+    getShipLength() {
+        return this.length;
+    }
 }
 
 export default Ship;
