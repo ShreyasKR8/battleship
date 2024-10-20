@@ -1,4 +1,4 @@
-import Gameboard from '../modules/gameboard';
+import { Gameboard, Orientation } from '../modules/gameboard';
 import Ship from '../modules/ship';
 
 describe('Test placeShip()', () => {
@@ -15,7 +15,7 @@ describe('Test placeShip()', () => {
         testGB[1][3] = 1;
         testGB[1][4] = 1;
         expect(
-            gameboard.placeShip(cruiser, [1, 2], 'horizontal')
+            gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL)
         ).toStrictEqual(testGB);
     });
 
@@ -26,7 +26,7 @@ describe('Test placeShip()', () => {
         testGB[2][9] = 1;
 
         expect(
-            gameboard.placeShip(submarine, [2, 7], 'horizontal')
+            gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL)
         ).toStrictEqual(testGB);
     });
 
@@ -38,7 +38,7 @@ describe('Test placeShip()', () => {
         testGB[7][4] = 1;
         testGB[8][4] = 1;
 
-        expect(gameboard.placeShip(carrier, [4, 4], 'vertical')).toStrictEqual(
+        expect(gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL)).toStrictEqual(
             testGB
         );
     });
@@ -51,7 +51,7 @@ describe('Test placeShip()', () => {
         testGB[8][8] = 1;
 
         expect(
-            gameboard.placeShip(battleship, [5, 8], 'vertical')
+            gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL)
         ).toStrictEqual(testGB);
     });
 
@@ -61,7 +61,7 @@ describe('Test placeShip()', () => {
         testGB[7][1] = 1;
 
         expect(
-            gameboard.placeShip(destroyer, [7, 0], 'horizontal')
+            gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL)
         ).toStrictEqual(testGB);
     });
 });
@@ -77,13 +77,39 @@ describe('Test placeShip() for out of bounds', () => {
     test('Place Cruiser', () => {
         const cruiser = new Ship(3);
         expect(
-            gameboard.placeShip(cruiser, [1, 8], 'horizontal')
+            gameboard.placeShip(cruiser, [1, 8], Orientation.HORIZONTAL)
         ).toStrictEqual(null);
     });
 
+    test('Place Submarine', () => {
+        const submarine = new Ship(3);
+        expect(gameboard.placeShip(submarine, [8, 2], Orientation.VERTICAL)).toStrictEqual(
+            null
+        );
+    });
+});
+
+describe('Test placeShip() for overlaps between two ships', () => {
+    let gameboard = null;
+    let testGB = null;
+    beforeAll(() => {
+        gameboard = new Gameboard();
+        testGB = new Array(10).fill(0).map(() => new Array(10).fill(0));
+    });
+
     test('Place Cruiser', () => {
+        testGB[1][7] = 1;
+        testGB[1][8] = 1;
+        testGB[1][9] = 1;
         const cruiser = new Ship(3);
-        expect(gameboard.placeShip(cruiser, [8, 2], 'vertical')).toStrictEqual(
+        expect(
+            gameboard.placeShip(cruiser, [1, 7], Orientation.HORIZONTAL)
+        ).toStrictEqual(testGB);
+    });
+
+    test('Does not allow 2 ships position to overlap', () => {
+        const submarine = new Ship(3);
+        expect(gameboard.placeShip(submarine, [1, 7], Orientation.VERTICAL)).toStrictEqual(
             null
         );
     });
