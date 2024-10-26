@@ -109,7 +109,7 @@ describe('Test placeShip() for overlaps between two ships', () => {
 
     test('Does not allow 2 ships position to overlap', () => {
         const submarine = new Ship(3);
-        expect(gameboard.placeShip(submarine, [1, 7], Orientation.VERTICAL)).toStrictEqual(
+        expect(gameboard.placeShip(submarine, [0, 7], Orientation.VERTICAL)).toStrictEqual(
             null
         );
     });

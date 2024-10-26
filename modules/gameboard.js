@@ -6,6 +6,17 @@ const Orientation = Object.freeze({
 const ROW_SIZE = 10;
 const COL_SIZE = 10;
 
+const adjacentCellDeltas = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+];
+
 class Gameboard {
     #reservedPositions = new Set();
     constructor() {
@@ -15,11 +26,43 @@ class Gameboard {
     }
 
     getAdjacentCells(position) {
+        let [currentX, currentY] = position;
+        const adjacentCells = [];
+        adjacentCellDeltas.forEach((cellCoordinates) => {
+            let [adjacentDeltaX, adjacentDeltaY] = cellCoordinates;
+            let adjacentX = currentX + adjacentDeltaX;
+            let adjacentY = currentY + adjacentDeltaY;
+            if (
+                adjacentX >= 0 &&
+                adjacentX <= 9 &&
+                adjacentY >= 0 &&
+                adjacentY <= 9
+            ) {
+                let adjacentCellsCoordinate = [adjacentX, adjacentY];
+                adjacentCells.push(adjacentCellsCoordinate);
+            }
+        });
 
+        return adjacentCells;
     }
 
     isValidPosition(ship, position, orientation) {
-        if(this.#reservedPositions.has(position.toString())) {
+        if (this.#reservedPositions.has(position.toString())) {
+            return false;
+        }
+
+        let [rowNumber, colNumber] = position;
+        let shipLength = ship.getShipLength();
+
+        if (
+            orientation == Orientation.HORIZONTAL &&
+            colNumber + shipLength > ROW_SIZE
+        ) {
+            return false;
+        } else if (
+            orientation == Orientation.VERTICAL &&
+            rowNumber + shipLength > COL_SIZE
+        ) {
             return false;
         }
 
@@ -35,29 +78,34 @@ class Gameboard {
         let shipLength = ship.getShipLength();
 
         if (orientation == Orientation.HORIZONTAL) {
-            if (colNumber + shipLength > ROW_SIZE) {
-                return null; // setting position was unsuccessful.
-            }
-
             while (shipLength--) {
                 this.gameboard[rowNumber][colNumber] = 1;
+                this.#reservedPositions.add([rowNumber, colNumber].toString());
+                let adjacentCells = this.getAdjacentCells([
+                    rowNumber,
+                    colNumber,
+                ]);
+                adjacentCells.forEach((cell) => {
+                    this.#reservedPositions.add(cell.toString());
+                });
                 colNumber++;
             }
-            this.#reservedPositions.add(position.toString());
         } else if (orientation == Orientation.VERTICAL) {
-            if (rowNumber + shipLength > COL_SIZE) {
-                return null; // setting position was unsuccessful.
-            }
-            
             while (shipLength--) {
                 this.gameboard[rowNumber][colNumber] = 1;
+                this.#reservedPositions.add([rowNumber, colNumber].toString());
+                let adjacentCells = this.getAdjacentCells([
+                    rowNumber,
+                    colNumber,
+                ]);
+                adjacentCells.forEach((cell) => {
+                    this.#reservedPositions.add(cell.toString());
+                });
                 rowNumber++;
             }
-            this.#reservedPositions.add(position.toString());
         } else {
             return null; //invalid orientation
         }
-
         return this.gameboard;
     }
 }
