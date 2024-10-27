@@ -6,14 +6,14 @@ describe('Test placeShip()', () => {
     let testGB = null;
     beforeAll(() => {
         gameboard = new Gameboard();
-        testGB = new Array(10).fill(0).map(() => new Array(10).fill(0));
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
     });
 
     test('Place Cruiser', () => {
         const cruiser = new Ship(3);
-        testGB[1][2] = 1;
-        testGB[1][3] = 1;
-        testGB[1][4] = 1;
+        testGB[1][2] = cruiser;
+        testGB[1][3] = cruiser;
+        testGB[1][4] = cruiser;
         expect(
             gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL)
         ).toStrictEqual(testGB);
@@ -21,9 +21,9 @@ describe('Test placeShip()', () => {
 
     test('Place Submarine', () => {
         const submarine = new Ship(3);
-        testGB[2][7] = 1;
-        testGB[2][8] = 1;
-        testGB[2][9] = 1;
+        testGB[2][7] = submarine;
+        testGB[2][8] = submarine;
+        testGB[2][9] = submarine;
 
         expect(
             gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL)
@@ -32,11 +32,11 @@ describe('Test placeShip()', () => {
 
     test('Place Carrier', () => {
         const carrier = new Ship(5);
-        testGB[4][4] = 1;
-        testGB[5][4] = 1;
-        testGB[6][4] = 1;
-        testGB[7][4] = 1;
-        testGB[8][4] = 1;
+        testGB[4][4] = carrier;
+        testGB[5][4] = carrier;
+        testGB[6][4] = carrier;
+        testGB[7][4] = carrier;
+        testGB[8][4] = carrier;
 
         expect(gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL)).toStrictEqual(
             testGB
@@ -45,10 +45,10 @@ describe('Test placeShip()', () => {
 
     test('Place Battleship', () => {
         const battleship = new Ship(4);
-        testGB[5][8] = 1;
-        testGB[6][8] = 1;
-        testGB[7][8] = 1;
-        testGB[8][8] = 1;
+        testGB[5][8] = battleship;
+        testGB[6][8] = battleship;
+        testGB[7][8] = battleship;
+        testGB[8][8] = battleship;
 
         expect(
             gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL)
@@ -57,8 +57,8 @@ describe('Test placeShip()', () => {
 
     test('Place Destroyer', () => {
         const destroyer = new Ship(2);
-        testGB[7][0] = 1;
-        testGB[7][1] = 1;
+        testGB[7][0] = destroyer;
+        testGB[7][1] = destroyer;
 
         expect(
             gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL)
@@ -71,7 +71,7 @@ describe('Test placeShip() for out of bounds', () => {
     let testGB = null;
     beforeEach(() => {
         gameboard = new Gameboard();
-        testGB = new Array(10).fill(0).map(() => new Array(10).fill(0));
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
     });
 
     test('Place Cruiser', () => {
@@ -94,14 +94,14 @@ describe('Test placeShip() for overlaps between two ships', () => {
     let testGB = null;
     beforeAll(() => {
         gameboard = new Gameboard();
-        testGB = new Array(10).fill(0).map(() => new Array(10).fill(0));
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
     });
 
     test('Place Cruiser', () => {
-        testGB[1][7] = 1;
-        testGB[1][8] = 1;
-        testGB[1][9] = 1;
         const cruiser = new Ship(3);
+        testGB[1][7] = cruiser;
+        testGB[1][8] = cruiser;
+        testGB[1][9] = cruiser;
         expect(
             gameboard.placeShip(cruiser, [1, 7], Orientation.HORIZONTAL)
         ).toStrictEqual(testGB);
@@ -114,3 +114,74 @@ describe('Test placeShip() for overlaps between two ships', () => {
         );
     });
 });
+
+describe('Test receiveAttack()', () => {
+    let gameboard = null;
+    let testGB = null;
+    beforeAll(() => {
+        gameboard = new Gameboard();
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
+
+        const cruiser = new Ship(3);
+        const submarine = new Ship(3);
+        const carrier = new Ship(5);
+        const battleship = new Ship(4);
+        const destroyer = new Ship(2);
+        //cruiser
+        testGB[1][2] = cruiser;
+        testGB[1][3] = cruiser;
+        testGB[1][4] = cruiser;
+    
+        //submarine
+        testGB[2][7] = submarine;
+        testGB[2][8] = submarine;
+        testGB[2][9] = submarine;
+    
+        //carrier
+        testGB[4][4] = carrier;
+        testGB[5][4] = carrier;
+        testGB[6][4] = carrier;
+        testGB[7][4] = carrier;
+        testGB[8][4] = carrier;
+    
+        //battleship
+        testGB[5][8] = battleship;
+        testGB[6][8] = battleship;
+        testGB[7][8] = battleship;
+        testGB[8][8] = battleship;
+    
+        //destroyer
+        testGB[7][0] = destroyer;
+        testGB[7][1] = destroyer;
+        
+        gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
+        gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL);
+        gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL);
+        gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
+        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL)
+    });
+
+    // beforeEach(() => {
+        
+    // })
+
+    test('test receiveAttack() for carrier', () => {
+        gameboard.receiveAttack([4, 4]);
+        testGB[4][4] = 'X';
+        expect(gameboard.gameboard).toStrictEqual(testGB);
+    })
+    
+    test('test receiveAttack() for empty', () => {
+        testGB[9][9] = 'O';
+        gameboard.receiveAttack([9, 9]);
+        expect(gameboard.gameboard).toStrictEqual(testGB);
+    })
+})
+
+
+
+
+
+
+
+

@@ -3,32 +3,31 @@ const Orientation = Object.freeze({
     VERTICAL: 'vertical',
 });
 
-const ROW_SIZE = 10;
-const COL_SIZE = 10;
-
-const adjacentCellDeltas = [
-    [-1, -1],
-    [-1, 0],
-    [-1, 1],
-    [0, -1],
-    [0, 1],
-    [1, -1],
-    [1, 0],
-    [1, 1],
-];
-
 class Gameboard {
+    #ROW_SIZE = 10;
+    #COL_SIZE = 10;
+    #adjacentCellDeltas = [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+    ];
     #reservedPositions = new Set();
     constructor() {
-        this.gameboard = new Array(ROW_SIZE)
-            .fill(0)
-            .map(() => new Array(COL_SIZE).fill(0));
+        this.gameboard = new Array(this.#ROW_SIZE)
+            .fill(null)
+            .map(() => new Array(this.#COL_SIZE).fill(null));
+        this.ships = [];
     }
 
     getAdjacentCells(position) {
         let [currentX, currentY] = position;
         const adjacentCells = [];
-        adjacentCellDeltas.forEach((cellCoordinates) => {
+        this.#adjacentCellDeltas.forEach((cellCoordinates) => {
             let [adjacentDeltaX, adjacentDeltaY] = cellCoordinates;
             let adjacentX = currentX + adjacentDeltaX;
             let adjacentY = currentY + adjacentDeltaY;
@@ -52,16 +51,16 @@ class Gameboard {
         }
 
         let [rowNumber, colNumber] = position;
-        let shipLength = ship.getShipLength();
+        let shipLength = ship.size;
 
         if (
             orientation == Orientation.HORIZONTAL &&
-            colNumber + shipLength > ROW_SIZE
+            colNumber + shipLength > this.#ROW_SIZE
         ) {
             return false;
         } else if (
             orientation == Orientation.VERTICAL &&
-            rowNumber + shipLength > COL_SIZE
+            rowNumber + shipLength > this.#COL_SIZE
         ) {
             return false;
         }
@@ -75,11 +74,11 @@ class Gameboard {
         }
 
         let [rowNumber, colNumber] = position;
-        let shipLength = ship.getShipLength();
+        let shipLength = ship.size;
 
         if (orientation == Orientation.HORIZONTAL) {
-            while (shipLength--) {
-                this.gameboard[rowNumber][colNumber] = 1;
+            for (let i = 0; i < shipLength; i++) {
+                this.gameboard[rowNumber][colNumber] = ship;
                 this.#reservedPositions.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
@@ -90,9 +89,10 @@ class Gameboard {
                 });
                 colNumber++;
             }
+            this.ships.push(ship);
         } else if (orientation == Orientation.VERTICAL) {
-            while (shipLength--) {
-                this.gameboard[rowNumber][colNumber] = 1;
+            for (let i = 0; i < shipLength; i++) {
+                this.gameboard[rowNumber][colNumber] = ship;
                 this.#reservedPositions.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
@@ -103,10 +103,33 @@ class Gameboard {
                 });
                 rowNumber++;
             }
+            this.ships.push(ship);
         } else {
             return null; //invalid orientation
         }
         return this.gameboard;
+    }
+
+    receiveAttack(hitCoordinate) {
+        let [hitCoordinateX, hitCoordinateY] = hitCoordinate;
+        let target = this.gameboard[hitCoordinateX][hitCoordinateY];
+        if (!target) {
+            this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
+            return;
+        }
+        target.hit();
+        if(target.isSunk()) {
+            
+        }
+        this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
+        if(this.areAllShipsSunk()) {
+            //gameover, announce winner
+            console.log("Gameover")
+        }
+    }
+
+    areAllShipsSunk() {
+        return this.ships.every(ship => ship.isSunkStatus);
     }
 }
 
