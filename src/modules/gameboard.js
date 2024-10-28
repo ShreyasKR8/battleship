@@ -17,6 +17,7 @@ class Gameboard {
         [1, 1],
     ];
     #reservedPositions = new Set();
+    #shipPositions = new Set();
     constructor() {
         this.gameboard = new Array(this.#ROW_SIZE)
             .fill(null)
@@ -46,7 +47,10 @@ class Gameboard {
     }
 
     isValidPosition(ship, position, orientation) {
-        if (this.#reservedPositions.has(position.toString())) {
+        if (
+            this.#reservedPositions.has(position.toString()) ||
+            this.#shipPositions.has(position.toString())
+        ) {
             return false;
         }
 
@@ -79,7 +83,7 @@ class Gameboard {
         if (orientation == Orientation.HORIZONTAL) {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
-                this.#reservedPositions.add([rowNumber, colNumber].toString());
+                this.#shipPositions.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
                     colNumber,
@@ -93,7 +97,7 @@ class Gameboard {
         } else if (orientation == Orientation.VERTICAL) {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
-                this.#reservedPositions.add([rowNumber, colNumber].toString());
+                this.#shipPositions.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
                     colNumber,
@@ -130,6 +134,10 @@ class Gameboard {
 
     areAllShipsSunk() {
         return this.ships.every(ship => ship.isSunkStatus);
+    }
+
+    getShipPositions() {
+        return this.#shipPositions;
     }
 }
 

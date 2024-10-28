@@ -3,3 +3,31 @@
     margin: 0;
     box-sizing: border-box;
 }
+
+.gameboards {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: fit-content;
+    margin: 50px auto;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.cell {
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    width: 2em;
+    height: 2em;
+}
+
+.cell:hover {
+    background-color: #ccc;
+}
