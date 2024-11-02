@@ -4,21 +4,32 @@ import Ship from './modules/ship.js';
 import { Gameboard, Orientation } from './modules/gameboard.js';
 import display from './modules/display.js';
 
-const humanPlayer = new Player('human');
-const computerPlayer = new Player('computer');
+/* setup player one gameboard */
+const playerOne = new Player('player-one');
 
-const playerGameboard = humanPlayer.gameboard;
-const computerGameboard = computerPlayer.gameboard;
+const playerOneGameboard = playerOne.gameboard;
 
-display.createGrid(playerGameboard.gameboard[0].length, 'human');
-display.createGrid(computerGameboard.gameboard[0].length, 'computer');
+playerOneGameboard.placeShip(new Ship(2), [7, 0], Orientation.HORIZONTAL);
+playerOneGameboard.placeShip(new Ship(3), [1, 2], Orientation.HORIZONTAL);
+playerOneGameboard.placeShip(new Ship(3), [2, 7], Orientation.HORIZONTAL);
+playerOneGameboard.placeShip(new Ship(4), [5, 8], Orientation.VERTICAL);
+playerOneGameboard.placeShip(new Ship(5), [4, 4], Orientation.VERTICAL);
 
-playerGameboard.placeShip(new Ship(2), [7, 0], Orientation.HORIZONTAL);
-playerGameboard.placeShip(new Ship(3), [1, 2], Orientation.HORIZONTAL);
-playerGameboard.placeShip(new Ship(3), [2, 7], Orientation.HORIZONTAL);
-playerGameboard.placeShip(new Ship(4), [5, 8], Orientation.VERTICAL);
-playerGameboard.placeShip(new Ship(5), [4, 4], Orientation.VERTICAL);
+const playerOneShipPositions = playerOneGameboard.getShipPositions();
 
-const shipPositions = playerGameboard.getShipPositions();
+display.displayGameboard(undefined, 'player-one', playerOneShipPositions);
 
-display.placeShips(shipPositions);
+/* setup player two gameboard */
+const playerTwo = new Player('player-two');
+
+const playerTwoGameboard = playerTwo.gameboard;
+
+playerTwoGameboard.placeShip(new Ship(2), [8, 1], Orientation.HORIZONTAL);
+playerTwoGameboard.placeShip(new Ship(3), [2, 1], Orientation.HORIZONTAL);
+playerTwoGameboard.placeShip(new Ship(3), [1, 7], Orientation.VERTICAL);
+playerTwoGameboard.placeShip(new Ship(4), [6, 7], Orientation.VERTICAL);
+playerTwoGameboard.placeShip(new Ship(5), [4, 1], Orientation.HORIZONTAL);
+
+const playerTwoShipPositions = playerTwoGameboard.getShipPositions();
+
+display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
