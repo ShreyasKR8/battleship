@@ -23,18 +23,36 @@ function createGrid(size, gridOwner) {
             gridCell.setAttribute('data-col', col);
             grid.appendChild(gridCell);
             grid.setAttribute('data-owner', gridOwner);
-            if(gridOwner == 'player-two') {
+            if (gridOwner == 'player-two') {
                 // gridCell.style.contentVisibility = 'hidden';
             }
+            setUpEventListener(gridCell);
         }
     }
 }
 
 function placeShips(shipPositions, gridOwner) {
-    shipPositions.forEach(position => {
+    shipPositions.forEach((position) => {
         const [row, col] = position.split(',');
-        document.querySelector(`[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`).textContent = 's';
-    })
+        document.querySelector(
+            `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
+        ).textContent = 's';
+    });
+}
+
+function setUpEventListener(cell) {
+    cell.addEventListener('click', () => {
+        const coordinates = [
+            cell.getAttribute('data-row'),
+            cell.getAttribute('data-col'),
+        ];
+        sendEventOnCellClicked(coordinates);
+    });
+}
+
+function sendEventOnCellClicked(coordinates) {
+    const eventOnCellClicked = new CustomEvent('OnCellClicked', { detail: { coordinates } });
+    document.dispatchEvent(eventOnCellClicked);
 }
 
 export default {

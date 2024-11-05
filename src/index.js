@@ -33,3 +33,9 @@ playerTwoGameboard.placeShip(new Ship(5), [4, 1], Orientation.HORIZONTAL);
 const playerTwoShipPositions = playerTwoGameboard.getShipPositions();
 
 display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
+
+document.addEventListener('OnCellClicked', (e) => {
+    const row = Number(e.detail.coordinates[0]);
+    const col = Number(e.detail.coordinates[1]);
+    console.log(row, col)
+})
