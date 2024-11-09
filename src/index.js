@@ -1,8 +1,15 @@
 import './style.css';
 import Player from './modules/player.js';
 import Ship from './modules/ship.js';
-import { Gameboard, Orientation } from './modules/gameboard.js';
+import { Orientation } from './modules/gameboard.js';
 import display from './modules/display.js';
+import {
+    currentPlayer,
+    setCurrentPlayer,
+    switchTurn,
+} from './modules/gameState.js';
+
+setCurrentPlayer('player-one');
 
 /* setup player one gameboard */
 const playerOne = new Player('player-one');
@@ -39,24 +46,32 @@ document.addEventListener('OnCellClicked', handleCellClicked); //received from U
 function handleCellClicked(e) {
     const row = Number(e.detail.coordinates[0]);
     const col = Number(e.detail.coordinates[1]);
-    const currentPlayer = e.detail.currentPlayer;
+
     if (currentPlayer == 'player-one') {
-        const adjacentCells = playerTwoGameboard.receiveAttack([row, col]);
-        display.markCell([row, col], 'player-two', playerTwoGameboard.gameboard[row][col]);
-        if (adjacentCells) {
-            adjacentCells.forEach(cell => {
-                const [row, col] = cell.split(',');
-                display.markCell([row, col], 'player-two', playerTwoGameboard.gameboard[row][col]);
-            });
-        }
+        markCellsInUI(playerTwoGameboard, 'player-two',[row, col]);
     } else {
-        const adjacentCells = playerOneGameboard.receiveAttack([row, col]);
-        display.markCell([row, col], 'player-one', playerOneGameboard.gameboard[row][col]);
-        if (adjacentCells) {
-            adjacentCells.forEach(cell => {
-                const [row, col] = cell.split(',');
-                display.markCell([row, col], 'player-one', playerTwoGameboard.gameboard[row][col]);
-            });
-        }
+        markCellsInUI(playerOneGameboard, 'player-one',[row, col]);
     }
+    // switchTurn();
+}
+
+function markCellsInUI(playerGameboard, gridOwner, coordinates) {
+    const [row, col] = coordinates;
+    const adjacentCells = playerGameboard.receiveAttack(coordinates);
+    display.markCell(
+        [row, col],
+        gridOwner,
+        playerGameboard.gameboard[row][col]
+    );
+    if (adjacentCells) {
+        adjacentCells.forEach((cell) => {
+            const [row, col] = cell.split(',');
+            display.markCell(
+                [row, col],
+                gridOwner,
+                playerGameboard.gameboard[row][col]
+            );
+        });
+    }
+    switchTurn();
 }

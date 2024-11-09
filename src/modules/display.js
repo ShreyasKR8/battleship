@@ -1,9 +1,9 @@
+import { currentPlayer } from "./gameState";
+
 function displayGameboard(size = 10, gridOwner, shipPositions) {
     createGrid(size, gridOwner);
     placeShips(shipPositions, gridOwner);
 }
-
-let currentPlayer = 'player-one';
 
 function createGrid(size, gridOwner) {
     let grid = null;
@@ -26,7 +26,7 @@ function createGrid(size, gridOwner) {
             grid.appendChild(gridCell);
             grid.setAttribute('data-owner', gridOwner);
             if (gridOwner == 'player-two') {
-                // gridCell.style.contentVisibility = 'hidden';
+                gridCell.style.contentVisibility = 'hidden';
                 setUpEventListener(gridCell);
             }
         }
@@ -51,6 +51,7 @@ function markCell(coordinates, gridOwner, markContent) {
     if (markContent == 'X') {
         cell.style.color = 'red';
     }
+    cell.style.contentVisibility = 'visible';
     cell.removeEventListener('click', handleCellClick);
 }
 
@@ -64,12 +65,12 @@ function handleCellClick(e) {
         cell.getAttribute('data-row'),
         cell.getAttribute('data-col'),
     ];
-    sendEventOnCellClicked(coordinates, currentPlayer);
+    sendEventOnCellClicked(coordinates);
 }
 
-function sendEventOnCellClicked(coordinates, currentPlayer) {
+function sendEventOnCellClicked(coordinates) {
     const eventOnCellClicked = new CustomEvent('OnCellClicked', {
-        detail: { coordinates, currentPlayer },
+        detail: { coordinates },
     });
     document.dispatchEvent(eventOnCellClicked);
 }
