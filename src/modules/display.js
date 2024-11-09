@@ -3,6 +3,8 @@ function displayGameboard(size = 10, gridOwner, shipPositions) {
     placeShips(shipPositions, gridOwner);
 }
 
+let currentPlayer = 'player-one';
+
 function createGrid(size, gridOwner) {
     let grid = null;
     if (gridOwner == 'player-one') {
@@ -25,8 +27,8 @@ function createGrid(size, gridOwner) {
             grid.setAttribute('data-owner', gridOwner);
             if (gridOwner == 'player-two') {
                 // gridCell.style.contentVisibility = 'hidden';
+                setUpEventListener(gridCell);
             }
-            setUpEventListener(gridCell);
         }
     }
 }
@@ -40,21 +42,39 @@ function placeShips(shipPositions, gridOwner) {
     });
 }
 
-function setUpEventListener(cell) {
-    cell.addEventListener('click', () => {
-        const coordinates = [
-            cell.getAttribute('data-row'),
-            cell.getAttribute('data-col'),
-        ];
-        sendEventOnCellClicked(coordinates);
-    });
+function markCell(coordinates, gridOwner, markContent) {
+    const [row, col] = coordinates;
+    const cell = document.querySelector(
+        `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
+    );
+    cell.textContent = markContent;
+    if (markContent == 'X') {
+        cell.style.color = 'red';
+    }
+    cell.removeEventListener('click', handleCellClick);
 }
 
-function sendEventOnCellClicked(coordinates) {
-    const eventOnCellClicked = new CustomEvent('OnCellClicked', { detail: { coordinates } });
+function setUpEventListener(cell) {
+    cell.addEventListener('click', handleCellClick);
+}
+
+function handleCellClick(e) {
+    const cell = e.currentTarget;
+    const coordinates = [
+        cell.getAttribute('data-row'),
+        cell.getAttribute('data-col'),
+    ];
+    sendEventOnCellClicked(coordinates, currentPlayer);
+}
+
+function sendEventOnCellClicked(coordinates, currentPlayer) {
+    const eventOnCellClicked = new CustomEvent('OnCellClicked', {
+        detail: { coordinates, currentPlayer },
+    });
     document.dispatchEvent(eventOnCellClicked);
 }
 
 export default {
     displayGameboard,
+    markCell,
 };

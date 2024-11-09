@@ -34,8 +34,29 @@ const playerTwoShipPositions = playerTwoGameboard.getShipPositions();
 
 display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
 
-document.addEventListener('OnCellClicked', (e) => {
+document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
+
+function handleCellClicked(e) {
     const row = Number(e.detail.coordinates[0]);
     const col = Number(e.detail.coordinates[1]);
-    console.log(row, col)
-})
+    const currentPlayer = e.detail.currentPlayer;
+    if (currentPlayer == 'player-one') {
+        const adjacentCells = playerTwoGameboard.receiveAttack([row, col]);
+        display.markCell([row, col], 'player-two', playerTwoGameboard.gameboard[row][col]);
+        if (adjacentCells) {
+            adjacentCells.forEach(cell => {
+                const [row, col] = cell.split(',');
+                display.markCell([row, col], 'player-two', playerTwoGameboard.gameboard[row][col]);
+            });
+        }
+    } else {
+        const adjacentCells = playerOneGameboard.receiveAttack([row, col]);
+        display.markCell([row, col], 'player-one', playerOneGameboard.gameboard[row][col]);
+        if (adjacentCells) {
+            adjacentCells.forEach(cell => {
+                const [row, col] = cell.split(',');
+                display.markCell([row, col], 'player-one', playerTwoGameboard.gameboard[row][col]);
+            });
+        }
+    }
+}

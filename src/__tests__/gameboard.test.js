@@ -178,6 +178,46 @@ describe('Test receiveAttack()', () => {
     })
 })
 
+describe.only('test exclusion of ship cells in getAdjacentCells', () => {
+    let gameboard = null;
+    let testGB = null;
+    beforeAll(() => {
+        gameboard = new Gameboard();
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
+
+        const battleship = new Ship(4);
+        const submarine = new Ship(3);
+
+        //battleship
+        testGB[5][8] = battleship;
+        testGB[6][8] = battleship;
+        testGB[7][8] = battleship;
+        testGB[8][8] = battleship;
+
+        testGB[2][1] = submarine;
+        testGB[2][2] = submarine;
+        testGB[2][3] = submarine;
+    
+        
+        gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
+        gameboard.placeShip(submarine, [2, 1], Orientation.HORIZONTAL);
+    });
+
+    test('test if [6, 8] exists', () => {
+        const adjacentCells = gameboard.getAdjacentCells([5, 8]);
+        console.log(adjacentCells);
+        const callBack = (element) => element[0] == 6 && element[1] == 8;
+        expect(adjacentCells.findIndex(callBack)).toBe(-1);
+    })
+
+    test('test if [2, 2] exists', () => {
+        const adjacentCells = gameboard.getAdjacentCells([2, 1]);
+        console.log(adjacentCells);
+        const callBack = (element) => element[0] == 2 && element[1] == 2;
+        expect(adjacentCells.findIndex(callBack)).toBe(-1);
+    })
+});
+
 
 
 

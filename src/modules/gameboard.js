@@ -18,6 +18,7 @@ class Gameboard {
     ];
     #reservedPositions = new Set();
     #shipPositions = new Set();
+    #shipToAdjacentCellsMap = new Map(); //map of ship object to adjacentCellsOfShip set()
     constructor() {
         this.gameboard = new Array(this.#ROW_SIZE)
             .fill(null)
@@ -79,6 +80,7 @@ class Gameboard {
 
         let [rowNumber, colNumber] = position;
         let shipLength = ship.size;
+        let allAdjacentCellsOfShip = new Set();
 
         if (orientation == Orientation.HORIZONTAL) {
             for (let i = 0; i < shipLength; i++) {
@@ -90,6 +92,7 @@ class Gameboard {
                 ]);
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
+                    allAdjacentCellsOfShip.add(cell.toString());
                 });
                 colNumber++;
             }
@@ -104,6 +107,7 @@ class Gameboard {
                 ]);
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
+                    allAdjacentCellsOfShip.add(cell.toString());
                 });
                 rowNumber++;
             }
@@ -111,6 +115,16 @@ class Gameboard {
         } else {
             return null; //invalid orientation
         }
+
+        //remove all cells that have ships
+        allAdjacentCellsOfShip.forEach((cell) => {
+            const [row, col] = cell.split(',');
+            if (this.gameboard[row][col] !== null) {
+                allAdjacentCellsOfShip.delete(cell);
+            }
+        });
+
+        this.#shipToAdjacentCellsMap.set(ship, allAdjacentCellsOfShip);
         return this.gameboard;
     }
 
@@ -119,21 +133,27 @@ class Gameboard {
         let target = this.gameboard[hitCoordinateX][hitCoordinateY];
         if (!target) {
             this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
-            return;
+            return null;
         }
         target.hit();
-        if(target.isSunk()) {
-            
-        }
         this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
-        if(this.areAllShipsSunk()) {
+        if (this.areAllShipsSunk()) {
             //gameover, announce winner
-            console.log("Gameover")
+            console.log('Gameover');
         }
+        if (target.isSunk()) {
+            const adjacentCellsSet = this.#shipToAdjacentCellsMap.get(target);
+            adjacentCellsSet.forEach((cell) => {
+                const [row, col] = cell.split(',');
+                this.gameboard[row][col] = 'O';
+            });
+            return adjacentCellsSet;
+        }
+        return null;
     }
 
     areAllShipsSunk() {
-        return this.ships.every(ship => ship.isSunkStatus);
+        return this.ships.every((ship) => ship.isSunkStatus);
     }
 
     getShipPositions() {
