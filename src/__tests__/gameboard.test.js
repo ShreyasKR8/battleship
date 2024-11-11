@@ -38,9 +38,9 @@ describe('Test placeShip()', () => {
         testGB[7][4] = carrier;
         testGB[8][4] = carrier;
 
-        expect(gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL)).toStrictEqual(
-            testGB
-        );
+        expect(
+            gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL)
+        ).toStrictEqual(testGB);
     });
 
     test('Place Battleship', () => {
@@ -83,9 +83,9 @@ describe('Test placeShip() for out of bounds', () => {
 
     test('Place Submarine', () => {
         const submarine = new Ship(3);
-        expect(gameboard.placeShip(submarine, [8, 2], Orientation.VERTICAL)).toStrictEqual(
-            null
-        );
+        expect(
+            gameboard.placeShip(submarine, [8, 2], Orientation.VERTICAL)
+        ).toStrictEqual(null);
     });
 });
 
@@ -109,9 +109,9 @@ describe('Test placeShip() for overlaps between two ships', () => {
 
     test('Does not allow 2 ships position to overlap', () => {
         const submarine = new Ship(3);
-        expect(gameboard.placeShip(submarine, [0, 7], Orientation.VERTICAL)).toStrictEqual(
-            null
-        );
+        expect(
+            gameboard.placeShip(submarine, [0, 7], Orientation.VERTICAL)
+        ).toStrictEqual(null);
     });
 });
 
@@ -131,62 +131,81 @@ describe('Test receiveAttack()', () => {
         testGB[1][2] = cruiser;
         testGB[1][3] = cruiser;
         testGB[1][4] = cruiser;
-    
+
         //submarine
         testGB[2][7] = submarine;
         testGB[2][8] = submarine;
         testGB[2][9] = submarine;
-    
+
         //carrier
         testGB[4][4] = carrier;
         testGB[5][4] = carrier;
         testGB[6][4] = carrier;
         testGB[7][4] = carrier;
         testGB[8][4] = carrier;
-    
+
         //battleship
         testGB[5][8] = battleship;
         testGB[6][8] = battleship;
         testGB[7][8] = battleship;
         testGB[8][8] = battleship;
-    
+
         //destroyer
         testGB[7][0] = destroyer;
         testGB[7][1] = destroyer;
-        
+
         gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
         gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL);
         gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL);
         gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
-        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL)
+        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
     });
 
     // beforeEach(() => {
-        
+
     // })
 
     test('test receiveAttack() for carrier', () => {
         gameboard.receiveAttack([4, 4]);
         testGB[4][4] = 'X';
         expect(gameboard.gameboard).toStrictEqual(testGB);
-    })
-    
+    });
+
     test('test receiveAttack() for empty', () => {
         testGB[9][9] = 'O';
         gameboard.receiveAttack([9, 9]);
         expect(gameboard.gameboard).toStrictEqual(testGB);
-    })
-})
+    });
+});
 
-describe.only('test exclusion of ship cells in getAdjacentCells', () => {
+describe.only('test getRandomCoordinates()', () => {
     let gameboard = null;
     let testGB = null;
     beforeAll(() => {
         gameboard = new Gameboard();
         testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
 
-        const battleship = new Ship(4);
+        const cruiser = new Ship(3);
         const submarine = new Ship(3);
+        const carrier = new Ship(5);
+        const battleship = new Ship(4);
+        const destroyer = new Ship(2);
+        //cruiser
+        testGB[1][2] = cruiser;
+        testGB[1][3] = cruiser;
+        testGB[1][4] = cruiser;
+
+        //submarine
+        testGB[2][7] = submarine;
+        testGB[2][8] = submarine;
+        testGB[2][9] = submarine;
+
+        //carrier
+        testGB[4][4] = carrier;
+        testGB[5][4] = carrier;
+        testGB[6][4] = carrier;
+        testGB[7][4] = carrier;
+        testGB[8][4] = carrier;
 
         //battleship
         testGB[5][8] = battleship;
@@ -194,34 +213,79 @@ describe.only('test exclusion of ship cells in getAdjacentCells', () => {
         testGB[7][8] = battleship;
         testGB[8][8] = battleship;
 
-        testGB[2][1] = submarine;
-        testGB[2][2] = submarine;
-        testGB[2][3] = submarine;
-    
-        
+        //destroyer
+        testGB[7][0] = destroyer;
+        testGB[7][1] = destroyer;
+
         gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
-        gameboard.placeShip(submarine, [2, 1], Orientation.HORIZONTAL);
+        gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL);
+        gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL);
+        gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
+        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
     });
 
-    test('test if [6, 8] exists', () => {
-        const adjacentCells = gameboard.getAdjacentCells([5, 8]);
-        console.log(adjacentCells);
-        const callBack = (element) => element[0] == 6 && element[1] == 8;
-        expect(adjacentCells.findIndex(callBack)).toBe(-1);
-    })
+    // test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
+    //     testGB[6][0] = 'O' //mark 6,0 as already chosen coordinates.
+    //     expect(gameboard.getRandomCoorinates)
+    // });
 
-    test('test if [2, 2] exists', () => {
-        const adjacentCells = gameboard.getAdjacentCells([2, 1]);
-        console.log(adjacentCells);
-        const callBack = (element) => element[0] == 2 && element[1] == 2;
-        expect(adjacentCells.findIndex(callBack)).toBe(-1);
-    })
+    // test('test if [2, 2] exists', () => {
+
+    // });
 });
 
+describe.only('test getRandomCoordinates()', () => {
+    let gameboard = null;
+    let testGB = null;
+    beforeAll(() => {
+        gameboard = new Gameboard();
+        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
 
+        const cruiser = new Ship(3);
+        const submarine = new Ship(3);
+        const carrier = new Ship(5);
+        const battleship = new Ship(4);
+        const destroyer = new Ship(2);
+        //cruiser
+        testGB[1][2] = cruiser;
+        testGB[1][3] = cruiser;
+        testGB[1][4] = cruiser;
 
+        //submarine
+        testGB[2][7] = submarine;
+        testGB[2][8] = submarine;
+        testGB[2][9] = submarine;
 
+        //carrier
+        testGB[4][4] = carrier;
+        testGB[5][4] = carrier;
+        testGB[6][4] = carrier;
+        testGB[7][4] = carrier;
+        testGB[8][4] = carrier;
 
+        //battleship
+        testGB[5][8] = battleship;
+        testGB[6][8] = battleship;
+        testGB[7][8] = battleship;
+        testGB[8][8] = battleship;
 
+        //destroyer
+        testGB[7][0] = destroyer;
+        testGB[7][1] = destroyer;
 
+        gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
+        gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL);
+        gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL);
+        gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
+        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
+    });
 
+    // test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
+    //     testGB[6][0] = 'O' //mark 6,0 as already chosen coordinates.
+    //     expect(gameboard.getRandomCoorinates)
+    // });
+
+    // test('test if [2, 2] exists', () => {
+
+    // });
+});

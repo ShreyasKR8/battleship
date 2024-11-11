@@ -1,4 +1,4 @@
-import { currentPlayer } from "./gameState";
+// import { currentPlayer } from "./gameState";
 
 function displayGameboard(size = 10, gridOwner, shipPositions) {
     createGrid(size, gridOwner);
@@ -62,15 +62,16 @@ function setUpEventListener(cell) {
 function handleCellClick(e) {
     const cell = e.currentTarget;
     const coordinates = [
-        cell.getAttribute('data-row'),
-        cell.getAttribute('data-col'),
+        Number(cell.getAttribute('data-row')),
+        Number(cell.getAttribute('data-col')),
     ];
-    sendEventOnCellClicked(coordinates);
+    const gridOwner = cell.parentElement.getAttribute('data-owner');
+    sendEventOnCellClicked(coordinates, gridOwner);
 }
 
-function sendEventOnCellClicked(coordinates) {
+function sendEventOnCellClicked(coordinates, gridOwner) {
     const eventOnCellClicked = new CustomEvent('OnCellClicked', {
-        detail: { coordinates },
+        detail: { coordinates, gridOwner },
     });
     document.dispatchEvent(eventOnCellClicked);
 }

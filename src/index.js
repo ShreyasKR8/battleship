@@ -43,35 +43,44 @@ display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
 
-function handleCellClicked(e) {
-    const row = Number(e.detail.coordinates[0]);
-    const col = Number(e.detail.coordinates[1]);
+setInterval(isComputersTurn, 1500);
 
-    if (currentPlayer == 'player-one') {
-        markCellsInUI(playerTwoGameboard, 'player-two',[row, col]);
-    } else {
-        markCellsInUI(playerOneGameboard, 'player-one',[row, col]);
+function handleCellClicked(e) {
+    const gridOwner = e.detail.gridOwner;
+    const hitCoordinates = e.detail.coordinates;
+
+    const isShipHit = attack(playerTwoGameboard, gridOwner, hitCoordinates);
+
+    if(!isShipHit) {
+        switchTurn();
     }
-    // switchTurn();
 }
 
-function markCellsInUI(playerGameboard, gridOwner, coordinates) {
-    const [row, col] = coordinates;
-    const adjacentCells = playerGameboard.receiveAttack(coordinates);
+function attack(playerGameboard, gridOwner, coordinates) {
+    const [rowNumber, colNumber] = coordinates;
+    const { adjacentCells, isShipHit } = playerGameboard.receiveAttack(coordinates);
+    markCellsInUI(rowNumber, colNumber, gridOwner, playerGameboard, adjacentCells);
+    return isShipHit;
+}
+
+function markCellsInUI(rowNumber, colNumber, gridOwner, playerGameboard, adjacentCells) {
     display.markCell(
-        [row, col],
+        [rowNumber, colNumber],
         gridOwner,
-        playerGameboard.gameboard[row][col]
+        playerGameboard.gameboard[rowNumber][colNumber]
     );
     if (adjacentCells) {
         adjacentCells.forEach((cell) => {
-            const [row, col] = cell.split(',');
-            display.markCell(
-                [row, col],
-                gridOwner,
-                playerGameboard.gameboard[row][col]
-            );
+            const [rowNumber, colNumber] = cell.split(',');
+            display.markCell([rowNumber, colNumber], gridOwner, playerGameboard.gameboard[rowNumber][colNumber]);
         });
     }
-    switchTurn();
+}
+
+function isComputersTurn() {
+    if (currentPlayer == 'player-two') {
+        const randomCoordinate = playerOneGameboard.getRandomCoordinate();
+        let isShipHit = attack(playerOneGameboard, 'player-one', randomCoordinate);
+        switchTurn();
+    }
 }

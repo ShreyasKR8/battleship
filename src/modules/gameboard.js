@@ -133,7 +133,7 @@ class Gameboard {
         let target = this.gameboard[hitCoordinateX][hitCoordinateY];
         if (!target) {
             this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
-            return null;
+            return { adjacentCells : null, isShipHit : false };
         }
         target.hit();
         this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
@@ -147,9 +147,9 @@ class Gameboard {
                 const [row, col] = cell.split(',');
                 this.gameboard[row][col] = 'O';
             });
-            return adjacentCellsSet;
+            return { adjacentCells : adjacentCellsSet, isShipHit : true };
         }
-        return null;
+        return { adjacentCells : null, isShipHit : true };
     }
 
     areAllShipsSunk() {
@@ -158,6 +158,19 @@ class Gameboard {
 
     getShipPositions() {
         return this.#shipPositions;
+    }
+
+    getRandomCoordinate() {
+        let randomRowNumber = Math.floor(Math.random() * (this.#ROW_SIZE - 1));
+        let randomColNumber = Math.floor(Math.random() * (this.#COL_SIZE - 1));
+        let randomCoordinate = [randomRowNumber, randomColNumber];
+        if (
+            this.gameboard[randomRowNumber][randomColNumber] === 'X' ||
+            this.gameboard[randomRowNumber][randomColNumber] === 'O'
+        ) {
+            return this.getRandomCoordinate();
+        }
+        return randomCoordinate;
     }
 }
 
