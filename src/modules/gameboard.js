@@ -16,6 +16,12 @@ class Gameboard {
         [1, 0],
         [1, 1],
     ];
+    #relevantAdjacentCellDeltas = [ //only horizontal and vertical adjacent cell deltas
+        [-1, 0],
+        [0, -1],
+        [0, 1],
+        [1, 0],
+    ];
     #reservedPositions = new Set();
     #shipPositions = new Set();
     #shipToAdjacentCellsMap = new Map(); //map of ship object to adjacentCellsOfShip set()
@@ -26,10 +32,10 @@ class Gameboard {
         this.ships = [];
     }
 
-    getAdjacentCells(position) {
+    getAdjacentCells(position, adjacentDeltas) {
         let [currentX, currentY] = position;
         const adjacentCells = [];
-        this.#adjacentCellDeltas.forEach((cellCoordinates) => {
+        adjacentDeltas.forEach((cellCoordinates) => {
             let [adjacentDeltaX, adjacentDeltaY] = cellCoordinates;
             let adjacentX = currentX + adjacentDeltaX;
             let adjacentY = currentY + adjacentDeltaY;
@@ -89,7 +95,7 @@ class Gameboard {
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
                     colNumber,
-                ]);
+                ], this.#adjacentCellDeltas);
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
                     allAdjacentCellsOfShip.add(cell.toString());
@@ -104,7 +110,7 @@ class Gameboard {
                 let adjacentCells = this.getAdjacentCells([
                     rowNumber,
                     colNumber,
-                ]);
+                ], this.#adjacentCellDeltas);
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
                     allAdjacentCellsOfShip.add(cell.toString());
@@ -131,7 +137,7 @@ class Gameboard {
     receiveAttack(hitCoordinate) {
         let [hitCoordinateX, hitCoordinateY] = hitCoordinate;
         let target = this.gameboard[hitCoordinateX][hitCoordinateY];
-        if (!target) {
+        if (target == null) {
             this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
             return { adjacentCells : null, isShipHit : false };
         }
@@ -171,6 +177,22 @@ class Gameboard {
             return this.getRandomCoordinate();
         }
         return randomCoordinate;
+    }
+
+    getRandomAdjacentCoordinate(hitCoordinate) {
+        const allAdjacentCoordinates = this.getRelevantAdjacentCoordinates(hitCoordinate);
+        if(!allAdjacentCoordinates || allAdjacentCoordinates.length === 0) {
+            return this.getRandomCoordinate();
+        }
+        const randomIndex = Math.floor(Math.random() * (allAdjacentCoordinates.length - 1));
+        const randomAdjacentCoordinate = allAdjacentCoordinates[randomIndex];
+        return randomAdjacentCoordinate;
+    }
+
+    getRelevantAdjacentCoordinates(hitCoordinate) {
+        const allAdjacentCoordinates = this.getAdjacentCells(hitCoordinate, this.#relevantAdjacentCellDeltas);
+        const relevantAdjacentCoordinates = allAdjacentCoordinates.filter((coordinate) => this.gameboard[coordinate[0]][coordinate[1]] !== 'X' && this.gameboard[coordinate[0]][coordinate[1]] !== 'O')
+        return relevantAdjacentCoordinates;
     }
 }
 

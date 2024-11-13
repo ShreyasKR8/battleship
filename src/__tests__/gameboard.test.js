@@ -178,7 +178,7 @@ describe('Test receiveAttack()', () => {
     });
 });
 
-describe.only('test getRandomCoordinates()', () => {
+describe('test getRandomCoordinates()', () => {
     let gameboard = null;
     let testGB = null;
     beforeAll(() => {
@@ -224,20 +224,20 @@ describe.only('test getRandomCoordinates()', () => {
         gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
     });
 
-    // test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
+    test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
     //     testGB[6][0] = 'O' //mark 6,0 as already chosen coordinates.
     //     expect(gameboard.getRandomCoorinates)
-    // });
+    });
 
     // test('test if [2, 2] exists', () => {
 
     // });
 });
 
-describe.only('test getRandomCoordinates()', () => {
+describe('test getRelevantAdjacentCoordinates()', () => {
     let gameboard = null;
     let testGB = null;
-    beforeAll(() => {
+    beforeEach(() => {
         gameboard = new Gameboard();
         testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
 
@@ -279,13 +279,41 @@ describe.only('test getRandomCoordinates()', () => {
         gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
         gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
     });
+    
+    test('test if all adjacent cells are returned', () => {
+        testGB[5][8] = 'X'; //mark as previously hit.
+        const expectedCells = [
+            [4, 8],
+            [6, 8],
+            [5, 7],
+            [5, 9],
+            [4, 7],
+            [4, 9],
+            [6, 7],
+            [6, 9],
+        ].sort();
+        gameboard.receiveAttack([5, 8]);
+        const adjacentCells = gameboard.getRelevantAdjacentCoordinates([5, 8]).sort();
+        expect(expectedCells).toStrictEqual(adjacentCells);
+    });
 
-    // test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
-    //     testGB[6][0] = 'O' //mark 6,0 as already chosen coordinates.
-    //     expect(gameboard.getRandomCoorinates)
-    // });
-
-    // test('test if [2, 2] exists', () => {
-
-    // });
+    test('test if an adjacent cell is returned excluding already hit cells', () => {
+        testGB[5][8] = 'X'; //mark as previously hit.
+        testGB[6, 8] = 'O';
+        testGB[4, 9] = 'O';
+        const expectedCells = [
+            [4, 8],
+            [5, 7],
+            [5, 9],
+            [4, 7],
+            [6, 7],
+            [6, 9],
+        ].sort();
+        gameboard.receiveAttack([6, 8]);
+        gameboard.receiveAttack([5, 8]);
+        gameboard.receiveAttack([4, 9]);
+        const adjacentCells = gameboard.getRelevantAdjacentCoordinates([5, 8]).sort();
+        expect(expectedCells).toStrictEqual(adjacentCells);
+    });
+    
 });

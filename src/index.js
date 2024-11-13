@@ -43,17 +43,19 @@ display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
 
-setInterval(isComputersTurn, 1500);
+// setInterval(isComputersTurn, 1500);
 
 function handleCellClicked(e) {
     const gridOwner = e.detail.gridOwner;
     const hitCoordinates = e.detail.coordinates;
-
-    const isShipHit = attack(playerTwoGameboard, gridOwner, hitCoordinates);
+    const playerGameboard = gridOwner === 'player-one' ? playerOneGameboard : playerTwoGameboard;
+    const isShipHit = attack(playerGameboard, gridOwner, hitCoordinates);
 
     if(!isShipHit) {
         switchTurn();
     }
+
+    isComputersTurn(isShipHit, hitCoordinates);
 }
 
 function attack(playerGameboard, gridOwner, coordinates) {
@@ -77,10 +79,25 @@ function markCellsInUI(rowNumber, colNumber, gridOwner, playerGameboard, adjacen
     }
 }
 
-function isComputersTurn() {
+function isComputersTurn(isShipHit, hitCoordinates) {
     if (currentPlayer == 'player-two') {
-        const randomCoordinate = playerOneGameboard.getRandomCoordinate();
-        let isShipHit = attack(playerOneGameboard, 'player-one', randomCoordinate);
-        switchTurn();
+        playComputersTurn(isShipHit, hitCoordinates);
     }
+}
+
+function playComputersTurn(isShipHit, hitCoordinates) {
+    let randomCoordinate = [];
+    if(isShipHit) {
+        randomCoordinate = playerOneGameboard.getRandomAdjacentCoordinate(hitCoordinates);
+        console.log(randomCoordinate)
+    } else {
+        randomCoordinate = playerOneGameboard.getRandomCoordinate();
+    }
+    const mockEvent = {
+        detail: {
+            coordinates: randomCoordinate,
+            gridOwner: 'player-one'
+        }
+    };
+    setTimeout(() => handleCellClicked(mockEvent), 1000);  //delay to simulate "thinking".
 }
