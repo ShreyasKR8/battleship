@@ -16,7 +16,7 @@ class Gameboard {
         [1, 0],
         [1, 1],
     ];
-    #relevantAdjacentCellDeltas = [ //only horizontal and vertical adjacent cell deltas
+    #relevantAdjacentCellDeltas = [
         [-1, 0],
         [0, -1],
         [0, 1],
@@ -29,7 +29,18 @@ class Gameboard {
         this.gameboard = new Array(this.#ROW_SIZE)
             .fill(null)
             .map(() => new Array(this.#COL_SIZE).fill(null));
+        this.availableCells = this.initializeAvailableCoordinates();
         this.ships = [];
+    }
+
+    initializeAvailableCoordinates() {
+        const cells = [];
+        for (let rowNum = 0; rowNum < this.#ROW_SIZE; rowNum++) {
+            for (let colNum = 0; colNum < this.#COL_SIZE; colNum++) {
+                cells.push([rowNum, colNum]);
+            }
+        }
+        return cells;
     }
 
     getAdjacentCells(position, adjacentDeltas) {
@@ -92,10 +103,10 @@ class Gameboard {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
                 this.#shipPositions.add([rowNumber, colNumber].toString());
-                let adjacentCells = this.getAdjacentCells([
-                    rowNumber,
-                    colNumber,
-                ], this.#adjacentCellDeltas);
+                let adjacentCells = this.getAdjacentCells(
+                    [rowNumber, colNumber],
+                    this.#adjacentCellDeltas
+                );
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
                     allAdjacentCellsOfShip.add(cell.toString());
@@ -107,10 +118,10 @@ class Gameboard {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
                 this.#shipPositions.add([rowNumber, colNumber].toString());
-                let adjacentCells = this.getAdjacentCells([
-                    rowNumber,
-                    colNumber,
-                ], this.#adjacentCellDeltas);
+                let adjacentCells = this.getAdjacentCells(
+                    [rowNumber, colNumber],
+                    this.#adjacentCellDeltas
+                );
                 adjacentCells.forEach((cell) => {
                     this.#reservedPositions.add(cell.toString());
                     allAdjacentCellsOfShip.add(cell.toString());
@@ -135,13 +146,22 @@ class Gameboard {
     }
 
     receiveAttack(hitCoordinate) {
+        // console.log(hitCoordinate);
         let [hitCoordinateX, hitCoordinateY] = hitCoordinate;
         let target = this.gameboard[hitCoordinateX][hitCoordinateY];
         if (target == null) {
             this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
-            return { adjacentCells : null, isShipHit : false };
+            return { adjacentCells: null, isShipHit: false };
         }
-        target.hit();
+        try {
+            target.hit();
+        } catch (error) {
+            console.error('coordinates are wrong: ', [
+                hitCoordinateX,
+                hitCoordinateY,
+            ]);
+        }
+        // target.hit();
         this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
         if (this.areAllShipsSunk()) {
             //gameover, announce winner
@@ -152,10 +172,11 @@ class Gameboard {
             adjacentCellsSet.forEach((cell) => {
                 const [row, col] = cell.split(',');
                 this.gameboard[row][col] = 'O';
+                this.removeCellFromAvailableCells([row, col]);
             });
-            return { adjacentCells : adjacentCellsSet, isShipHit : true };
+            return { adjacentCells: adjacentCellsSet, isShipHit: true };
         }
-        return { adjacentCells : null, isShipHit : true };
+        return { adjacentCells: null, isShipHit: true };
     }
 
     areAllShipsSunk() {
@@ -167,32 +188,57 @@ class Gameboard {
     }
 
     getRandomCoordinate() {
-        let randomRowNumber = Math.floor(Math.random() * (this.#ROW_SIZE - 1));
-        let randomColNumber = Math.floor(Math.random() * (this.#COL_SIZE - 1));
-        let randomCoordinate = [randomRowNumber, randomColNumber];
-        if (
-            this.gameboard[randomRowNumber][randomColNumber] === 'X' ||
-            this.gameboard[randomRowNumber][randomColNumber] === 'O'
-        ) {
-            return this.getRandomCoordinate();
+        if (this.availableCells.length === 0) {
+            throw new Error('No more available cells');
         }
+
+        let randomIndex = Math.floor(
+            Math.random() * this.availableCells.length
+        );
+
+        let randomCoordinate = this.availableCells[randomIndex];
+        this.availableCells.splice(randomIndex, 1);
+
         return randomCoordinate;
     }
 
     getRandomAdjacentCoordinate(hitCoordinate) {
-        const allAdjacentCoordinates = this.getRelevantAdjacentCoordinates(hitCoordinate);
-        if(!allAdjacentCoordinates || allAdjacentCoordinates.length === 0) {
+        const allAdjacentCoordinates =
+            this.getRelevantAdjacentCoordinates(hitCoordinate);
+        if (!allAdjacentCoordinates || allAdjacentCoordinates.length === 0) {
             return this.getRandomCoordinate();
         }
-        const randomIndex = Math.floor(Math.random() * (allAdjacentCoordinates.length - 1));
+
+        const randomIndex = Math.floor(
+            Math.random() * allAdjacentCoordinates.length
+        );
+
         const randomAdjacentCoordinate = allAdjacentCoordinates[randomIndex];
+
+        this.removeCellFromAvailableCells(randomAdjacentCoordinate);
+
         return randomAdjacentCoordinate;
     }
 
     getRelevantAdjacentCoordinates(hitCoordinate) {
-        const allAdjacentCoordinates = this.getAdjacentCells(hitCoordinate, this.#relevantAdjacentCellDeltas);
-        const relevantAdjacentCoordinates = allAdjacentCoordinates.filter((coordinate) => this.gameboard[coordinate[0]][coordinate[1]] !== 'X' && this.gameboard[coordinate[0]][coordinate[1]] !== 'O')
+        const allAdjacentCoordinates = this.getAdjacentCells(
+            hitCoordinate,
+            this.#relevantAdjacentCellDeltas
+        );
+        const relevantAdjacentCoordinates = allAdjacentCoordinates.filter(
+            (coordinate) =>
+                this.gameboard[coordinate[0]][coordinate[1]] !== 'X' &&
+                this.gameboard[coordinate[0]][coordinate[1]] !== 'O'
+        );
         return relevantAdjacentCoordinates;
+    }
+
+    removeCellFromAvailableCells(cellToRemove) {
+        this.availableCells = this.availableCells.filter(
+            (availableCell) => 
+                !(availableCell[0] == cellToRemove[0] && 
+                availableCell[1] == cellToRemove[1])
+        );
     }
 }
 

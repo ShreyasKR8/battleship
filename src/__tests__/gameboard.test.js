@@ -178,62 +178,6 @@ describe('Test receiveAttack()', () => {
     });
 });
 
-describe('test getRandomCoordinates()', () => {
-    let gameboard = null;
-    let testGB = null;
-    beforeAll(() => {
-        gameboard = new Gameboard();
-        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
-
-        const cruiser = new Ship(3);
-        const submarine = new Ship(3);
-        const carrier = new Ship(5);
-        const battleship = new Ship(4);
-        const destroyer = new Ship(2);
-        //cruiser
-        testGB[1][2] = cruiser;
-        testGB[1][3] = cruiser;
-        testGB[1][4] = cruiser;
-
-        //submarine
-        testGB[2][7] = submarine;
-        testGB[2][8] = submarine;
-        testGB[2][9] = submarine;
-
-        //carrier
-        testGB[4][4] = carrier;
-        testGB[5][4] = carrier;
-        testGB[6][4] = carrier;
-        testGB[7][4] = carrier;
-        testGB[8][4] = carrier;
-
-        //battleship
-        testGB[5][8] = battleship;
-        testGB[6][8] = battleship;
-        testGB[7][8] = battleship;
-        testGB[8][8] = battleship;
-
-        //destroyer
-        testGB[7][0] = destroyer;
-        testGB[7][1] = destroyer;
-
-        gameboard.placeShip(battleship, [5, 8], Orientation.VERTICAL);
-        gameboard.placeShip(carrier, [4, 4], Orientation.VERTICAL);
-        gameboard.placeShip(submarine, [2, 7], Orientation.HORIZONTAL);
-        gameboard.placeShip(cruiser, [1, 2], Orientation.HORIZONTAL);
-        gameboard.placeShip(destroyer, [7, 0], Orientation.HORIZONTAL);
-    });
-
-    test('test getRandomCoordinates() returns coordinates that are not chosen before', () => {
-    //     testGB[6][0] = 'O' //mark 6,0 as already chosen coordinates.
-    //     expect(gameboard.getRandomCoorinates)
-    });
-
-    // test('test if [2, 2] exists', () => {
-
-    // });
-});
-
 describe('test getRelevantAdjacentCoordinates()', () => {
     let gameboard = null;
     let testGB = null;

@@ -89,15 +89,15 @@ function playComputersTurn(isShipHit, hitCoordinates) {
     let randomCoordinate = [];
     if(isShipHit) {
         randomCoordinate = playerOneGameboard.getRandomAdjacentCoordinate(hitCoordinates);
-        console.log(randomCoordinate)
     } else {
         randomCoordinate = playerOneGameboard.getRandomCoordinate();
     }
+    console.log(randomCoordinate)
     const mockEvent = {
         detail: {
             coordinates: randomCoordinate,
             gridOwner: 'player-one'
         }
     };
-    setTimeout(() => handleCellClicked(mockEvent), 1000);  //delay to simulate "thinking".
+    setTimeout(() => handleCellClicked(mockEvent), 2000);  //delay to simulate "thinking".
 }
