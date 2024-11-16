@@ -228,13 +228,9 @@ describe('test getRelevantAdjacentCoordinates()', () => {
         testGB[5][8] = 'X'; //mark as previously hit.
         const expectedCells = [
             [4, 8],
-            [6, 8],
             [5, 7],
             [5, 9],
-            [4, 7],
-            [4, 9],
-            [6, 7],
-            [6, 9],
+            [6, 8],
         ].sort();
         gameboard.receiveAttack([5, 8]);
         const adjacentCells = gameboard.getRelevantAdjacentCoordinates([5, 8]).sort();
@@ -249,9 +245,6 @@ describe('test getRelevantAdjacentCoordinates()', () => {
             [4, 8],
             [5, 7],
             [5, 9],
-            [4, 7],
-            [6, 7],
-            [6, 9],
         ].sort();
         gameboard.receiveAttack([6, 8]);
         gameboard.receiveAttack([5, 8]);
