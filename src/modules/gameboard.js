@@ -153,16 +153,10 @@ class Gameboard {
             this.gameboard[hitCoordinateX][hitCoordinateY] = 'O';
             return { adjacentCells: null, isShipHit: false };
         }
-        try {
-            target.hit();
-        } catch (error) {
-            console.error('coordinates are wrong: ', [
-                hitCoordinateX,
-                hitCoordinateY,
-            ]);
-        }
-        // target.hit();
+
+        target.hit();
         this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
+        
         if (this.areAllShipsSunk()) {
             //gameover, announce winner
             console.log('Gameover');
