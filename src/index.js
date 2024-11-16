@@ -43,8 +43,6 @@ display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
 
-// setInterval(isComputersTurn, 1500);
-
 function handleCellClicked(e) {
     const gridOwner = e.detail.gridOwner;
     const hitCoordinates = e.detail.coordinates;
@@ -52,6 +50,7 @@ function handleCellClicked(e) {
     const isShipHit = attack(playerGameboard, gridOwner, hitCoordinates);
 
     if(!isShipHit) {
+        display.toggleGridBlockers();
         switchTurn();
     }
 

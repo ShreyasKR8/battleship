@@ -1,5 +1,3 @@
-// import { currentPlayer } from "./gameState";
-
 function displayGameboard(size = 10, gridOwner, shipPositions) {
     createGrid(size, gridOwner);
     placeShips(shipPositions, gridOwner);
@@ -31,6 +29,13 @@ function createGrid(size, gridOwner) {
             }
         }
     }
+}
+
+function toggleGridBlockers() {
+    const playerOneGrid = document.querySelector(`.player-one-gameboard`);
+    const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
+    playerOneGrid.classList.toggle('blocker');
+    playerTwoGrid.classList.toggle('blocker');
 }
 
 function placeShips(shipPositions, gridOwner) {
@@ -76,7 +81,9 @@ function sendEventOnCellClicked(coordinates, gridOwner) {
     document.dispatchEvent(eventOnCellClicked);
 }
 
+
 export default {
     displayGameboard,
     markCell,
+    toggleGridBlockers,
 };
