@@ -1,6 +1,9 @@
 const playerTwoInstructions = document.querySelectorAll(`.player-two-instruction`);
 const playerOneInstructions = document.querySelectorAll(`.player-one-instruction`);
 
+const playerOneGrid = document.querySelector(`.player-one-gameboard`);
+const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
+
 function displayGameboard(size = 10, gridOwner, shipPositions) {
     createGrid(size, gridOwner);
     placeShips(shipPositions, gridOwner);
@@ -35,8 +38,6 @@ function createGrid(size, gridOwner) {
 }
 
 function toggleGridBlockers() {
-    const playerOneGrid = document.querySelector(`.player-one-gameboard`);
-    const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
     playerOneGrid.classList.toggle('blocker');
     playerTwoGrid.classList.toggle('blocker');
 }
@@ -101,10 +102,20 @@ function sendEventOnCellClicked(coordinates, gridOwner) {
     document.dispatchEvent(eventOnCellClicked);
 }
 
+function handleGameOver(winner) {
+    const remainingCells = document.querySelectorAll('.cell');
+    remainingCells.forEach(cell => {
+        cell.removeEventListener('click', handleCellClick);
+    })
+
+    const winnerResults = document.querySelector('.winner-results');
+    winnerResults.textContent = `${winner} Won!`;
+}
 
 export default{
     displayGameboard,
     markCell,
     toggleGridBlockers,
     showPlayerTurn,
+    handleGameOver,
 };

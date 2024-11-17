@@ -49,6 +49,12 @@ function handleCellClicked(e) {
     const playerGameboard = gridOwner === 'player-one' ? playerOneGameboard : playerTwoGameboard;
     const isShipHit = attack(playerGameboard, gridOwner, hitCoordinates);
 
+    if(playerGameboard.areAllShipsSunk()) {
+        const Winner = gridOwner === 'player-one' ? 'Player Two' : 'Player One';
+        display.handleGameOver(Winner);
+        return;
+    }
+
     if(!isShipHit) {
         display.toggleGridBlockers();
         switchTurn();
