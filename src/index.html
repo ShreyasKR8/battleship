@@ -9,9 +9,17 @@
     <header>
         <h1>Battleship</h1>
     </header>
-    <div class="gameboards">
-        <div class='player-one-gameboard player-grid blocker'></div>
-        <div class='player-two-gameboard player-grid'></div>
-    </div>
+    <section class="gameboards">
+        <article>
+            <p class='player-two-instruction-not-needed hidden'>Attack!</p>
+            <div class='player-one-gameboard player-grid blocker'></div>
+            <p class='player-two-instruction hidden'>Computer's Turn</p>
+        </article>
+        <article>
+            <p class='player-one-instruction'>Attack!</p>
+            <div class='player-two-gameboard player-grid'></div>
+            <p class='player-one-instruction'>Player One's Turn</p>
+        </article>
+    </section>
 </body>
 </html>

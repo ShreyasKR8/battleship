@@ -1,3 +1,6 @@
+const playerTwoInstructions = document.querySelectorAll(`.player-two-instruction`);
+const playerOneInstructions = document.querySelectorAll(`.player-one-instruction`);
+
 function displayGameboard(size = 10, gridOwner, shipPositions) {
     createGrid(size, gridOwner);
     placeShips(shipPositions, gridOwner);
@@ -38,6 +41,16 @@ function toggleGridBlockers() {
     playerTwoGrid.classList.toggle('blocker');
 }
 
+function showPlayerTurn() {
+    playerOneInstructions.forEach(playerOneInstruction => {
+        playerOneInstruction.classList.toggle('hidden');
+    });
+    
+    playerTwoInstructions.forEach(playerTwoInstruction => {
+        playerTwoInstruction.classList.toggle('hidden');
+    });
+}
+
 function placeShips(shipPositions, gridOwner) {
     shipPositions.forEach((position) => {
         const [row, col] = position.split(',');
@@ -52,11 +65,18 @@ function markCell(coordinates, gridOwner, markContent) {
     const cell = document.querySelector(
         `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
     );
+
     cell.textContent = markContent;
+
     if (markContent == 'X') {
         cell.style.color = 'red';
+        cell.style.fontSize = '32px';
+    } else {
+        cell.style.fontSize = '12px';
     }
+
     cell.style.contentVisibility = 'visible';
+
     cell.removeEventListener('click', handleCellClick);
 }
 
@@ -82,8 +102,9 @@ function sendEventOnCellClicked(coordinates, gridOwner) {
 }
 
 
-export default {
+export default{
     displayGameboard,
     markCell,
     toggleGridBlockers,
+    showPlayerTurn,
 };

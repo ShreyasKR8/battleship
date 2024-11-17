@@ -1,32 +1,31 @@
-/* * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-} */
+/* @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap'); */
 
-/* @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: "Mukta", sans-serif;
-    font-weight: 400;
+@font-face {
+    font-family: 'Android-Assassin';
+    src: url('../fonts/AndroidAssassin-WXXY.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
 }
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  letter-spacing: 1px;
+}
+
+body {
+    font-family: Verdana;
 }
 
 header {
     font-size: 22px;
     width: fit-content;
-    margin: 20px auto 0;
+    margin: 30px auto 0;
+}
+
+header h1 {
+    font-family: 'Android-Assassin', sans-serif;
+    letter-spacing: 1px;
 }
 
 .gameboards {
@@ -34,7 +33,18 @@ header {
     flex-direction: row;
     gap: 50px;
     width: fit-content;
-    margin: 80px auto;
+    margin: 70px auto;
+}
+
+.player-one-instruction, 
+.player-two-instruction,
+.player-two-instruction-not-needed {
+    width: fit-content;
+    margin: 10px auto;
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 .player-grid {
@@ -45,12 +55,14 @@ header {
 
 .cell {
     border: 1px solid #ccc;
+    border: 1px solid #7b7b7b;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: monospace;
     font-size: 1.2rem;
-    width: 2em;
-    height: 2em;
+    width: 36px;
+    height: 36px;
 }
 
 .cell:hover {
@@ -59,5 +71,5 @@ header {
 
 .blocker {
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.3;
 }

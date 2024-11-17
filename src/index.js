@@ -52,6 +52,7 @@ function handleCellClicked(e) {
     if(!isShipHit) {
         display.toggleGridBlockers();
         switchTurn();
+        display.showPlayerTurn();
     }
 
     isComputersTurn(isShipHit, hitCoordinates);
@@ -91,7 +92,7 @@ function playComputersTurn(isShipHit, hitCoordinates) {
     } else {
         randomCoordinate = playerOneGameboard.getRandomCoordinate();
     }
-    console.log(randomCoordinate)
+
     const mockEvent = {
         detail: {
             coordinates: randomCoordinate,
