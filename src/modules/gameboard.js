@@ -43,6 +43,13 @@ class Gameboard {
         return cells;
     }
 
+    clearGameboard() {
+        this.gameboard = this.gameboard.map((row) => row.fill(null));
+        this.#reservedPositions.clear();
+        this.#shipPositions.clear();
+        this.#shipToAdjacentCellsMap.clear();
+    }
+
     getAdjacentCells(position, adjacentDeltas) {
         let [currentX, currentY] = position;
         const adjacentCells = [];
@@ -64,17 +71,31 @@ class Gameboard {
         return adjacentCells;
     }
 
-    isValidPosition(ship, position, orientation) {
-        if (
-            this.#reservedPositions.has(position.toString()) ||
-            this.#shipPositions.has(position.toString())
-        ) {
-            return false;
+    isValidPosition(shipLength, position, orientation) {
+        let [rowNumber, colNumber] = position;
+
+        //check if position is already filled or is adjacent position of filled cell.
+        for (let i = 0; i < shipLength; i++) {
+            if (orientation == Orientation.HORIZONTAL) {
+                let dPosition = [rowNumber, colNumber + i];
+                if (
+                    this.#reservedPositions.has(dPosition.toString()) ||
+                    this.#shipPositions.has(dPosition.toString())
+                ) {
+                    return false;
+                }
+            } else {
+                let dPosition = [rowNumber + i, colNumber];
+                if (
+                    this.#reservedPositions.has(dPosition.toString()) ||
+                    this.#shipPositions.has(dPosition.toString())
+                ) {
+                    return false;
+                }
+            }
         }
 
-        let [rowNumber, colNumber] = position;
-        let shipLength = ship.size;
-
+        //check if its length can go out of bounds;
         if (
             orientation == Orientation.HORIZONTAL &&
             colNumber + shipLength > this.#ROW_SIZE
@@ -91,7 +112,8 @@ class Gameboard {
     }
 
     placeShip(ship, position, orientation) {
-        if (!this.isValidPosition(ship, position, orientation)) {
+        if (!this.isValidPosition(ship.size, position, orientation)) {
+            // console.log(this.gameboard);
             return null;
         }
 
@@ -156,7 +178,7 @@ class Gameboard {
 
         target.hit();
         this.gameboard[hitCoordinateX][hitCoordinateY] = 'X';
-        
+
         if (this.areAllShipsSunk()) {
             //gameover, announce winner
             console.log('Gameover');
@@ -179,6 +201,59 @@ class Gameboard {
 
     getShipPositions() {
         return this.#shipPositions;
+    }
+
+    getRandomCoordinateForShip(shipLength) {
+        if (this.availableCells.length === 0) {
+            throw new Error('No available cells to place ship');
+        }
+
+        const MAX_RETRIES = 100;
+        let attempts = 0;
+
+        while (attempts < MAX_RETRIES) {
+            const randomOrientation = this.getRandomOrientation();
+
+            const rangeX =
+                randomOrientation === Orientation.HORIZONTAL
+                    ? this.#ROW_SIZE
+                    : this.#ROW_SIZE - (shipLength - 1);
+            const rangeY =
+                randomOrientation === Orientation.HORIZONTAL
+                    ? this.#COL_SIZE - (shipLength - 1)
+                    : this.#COL_SIZE;
+            const randomCoordinate = this.getRandomCoordinateInRange(
+                rangeX,
+                rangeY
+            );
+
+            if (
+                this.isValidPosition(
+                    shipLength,
+                    randomCoordinate,
+                    randomOrientation
+                )
+            ) {
+                return { randomCoordinate, randomOrientation };
+            }
+
+            attempts++;
+        }
+
+        throw new Error('Failed to find valid coordinate for ship placement');
+    }
+
+    getRandomOrientation() {
+        return Math.random() < 0.5
+            ? Orientation.HORIZONTAL
+            : Orientation.VERTICAL;
+        // return Orientation.HORIZONTAL;
+    }
+
+    getRandomCoordinateInRange(rangeX, rangeY) {
+        let x = Math.floor(Math.random() * rangeX);
+        let y = Math.floor(Math.random() * rangeY);
+        return [x, y];
     }
 
     getRandomCoordinate() {
@@ -229,9 +304,11 @@ class Gameboard {
 
     removeCellFromAvailableCells(cellToRemove) {
         this.availableCells = this.availableCells.filter(
-            (availableCell) => 
-                !(availableCell[0] == cellToRemove[0] && 
-                availableCell[1] == cellToRemove[1])
+            (availableCell) =>
+                !(
+                    availableCell[0] == cellToRemove[0] &&
+                    availableCell[1] == cellToRemove[1]
+                )
         );
     }
 }

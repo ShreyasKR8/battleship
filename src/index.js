@@ -1,7 +1,7 @@
 import './style.css';
 import Player from './modules/player.js';
 import Ship from './modules/ship.js';
-import { Orientation } from './modules/gameboard.js';
+// import { Orientation } from './modules/gameboard.js';
 import display from './modules/display.js';
 import {
     currentPlayer,
@@ -9,37 +9,62 @@ import {
     switchTurn,
 } from './modules/gameState.js';
 
+//initialise the game
+const initialisedObjects = initialiseGame();
+const playerOneGameboard = initialisedObjects.playerOneGameboard;
+const playerTwoGameboard = initialisedObjects.playerTwoGameboard;
+
 setCurrentPlayer('player-one');
 
-/* setup player one gameboard */
-const playerOne = new Player('player-one');
+function initialisePlayers() {
+    const playerOne = new Player('player-one');
 
-const playerOneGameboard = playerOne.gameboard;
+    const playerTwo = new Player('player-two');
 
-playerOneGameboard.placeShip(new Ship(2), [7, 0], Orientation.HORIZONTAL);
-playerOneGameboard.placeShip(new Ship(3), [1, 2], Orientation.HORIZONTAL);
-playerOneGameboard.placeShip(new Ship(3), [2, 7], Orientation.HORIZONTAL);
-playerOneGameboard.placeShip(new Ship(4), [5, 8], Orientation.VERTICAL);
-playerOneGameboard.placeShip(new Ship(5), [4, 4], Orientation.VERTICAL);
+    return { playerOne, playerTwo };
+}
 
-const playerOneShipPositions = playerOneGameboard.getShipPositions();
+function initialiseGameboards(playerOne, playerTwo) {
+    
+    /* setup player one gameboard */
+    const playerOneGameboard = playerOne.gameboard;
+    
+    placeShipAtRandomCoordinate(new Ship(2), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(4), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(5), playerOneGameboard);
 
-display.displayGameboard(undefined, 'player-one', playerOneShipPositions);
+    /* setup player two gameboard */
+    const playerTwoGameboard = playerTwo.gameboard;
 
-/* setup player two gameboard */
-const playerTwo = new Player('player-two');
+    placeShipAtRandomCoordinate(new Ship(2), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(4), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(5), playerTwoGameboard);
 
-const playerTwoGameboard = playerTwo.gameboard;
+    return { playerOneGameboard, playerTwoGameboard };
+}
 
-playerTwoGameboard.placeShip(new Ship(2), [8, 1], Orientation.HORIZONTAL);
-playerTwoGameboard.placeShip(new Ship(3), [2, 1], Orientation.HORIZONTAL);
-playerTwoGameboard.placeShip(new Ship(3), [1, 7], Orientation.VERTICAL);
-playerTwoGameboard.placeShip(new Ship(4), [6, 7], Orientation.VERTICAL);
-playerTwoGameboard.placeShip(new Ship(5), [4, 1], Orientation.HORIZONTAL);
+function initialiseGame() {
+    const { playerOne, playerTwo } = initialisePlayers();
+    const { playerOneGameboard, playerTwoGameboard } = initialiseGameboards(playerOne, playerTwo);
 
-const playerTwoShipPositions = playerTwoGameboard.getShipPositions();
-
-display.displayGameboard(undefined, 'player-two', playerTwoShipPositions);
+    /* display player one gameboard */
+    const playerOneShipPositions = playerOneGameboard.getShipPositions();
+    
+    display.displayGameboard(undefined, 'player-one');
+    display.displayShipsOnGameboard(playerOneShipPositions, 'player-one');
+    
+    /* display player two gameboard */
+    const playerTwoShipPositions = playerTwoGameboard.getShipPositions();
+    
+    display.displayGameboard(undefined, 'player-two');
+    display.displayShipsOnGameboard(playerTwoShipPositions, 'player-two');
+    
+    return { playerOne, playerTwo, playerOneGameboard, playerTwoGameboard };
+}
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
 
@@ -107,3 +132,24 @@ function playComputersTurn(isShipHit, hitCoordinates) {
     };
     setTimeout(() => handleCellClicked(mockEvent), 2000);  //delay to simulate "thinking".
 }
+
+function placeShipAtRandomCoordinate(ship, playerGameboard) {
+    let { randomCoordinate, randomOrientation } = playerGameboard.getRandomCoordinateForShip(ship.size);
+    playerGameboard.placeShip(ship, randomCoordinate, randomOrientation);
+}
+
+const randomPlacementButton = document.querySelector('.cycle-random-placements');
+randomPlacementButton.addEventListener('click', () => {
+
+    playerOneGameboard.clearGameboard();
+
+    placeShipAtRandomCoordinate(new Ship(2), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(4), playerOneGameboard);
+    placeShipAtRandomCoordinate(new Ship(5), playerOneGameboard);
+
+    const shipPositions = playerOneGameboard.getShipPositions();
+
+    display.updateShipsOnGameboard(shipPositions, 'player-one');
+});

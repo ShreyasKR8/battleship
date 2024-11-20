@@ -4,9 +4,8 @@ const playerOneInstructions = document.querySelectorAll(`.player-one-instruction
 const playerOneGrid = document.querySelector(`.player-one-gameboard`);
 const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
 
-function displayGameboard(size = 10, gridOwner, shipPositions) {
+function displayGameboard(size = 10, gridOwner) {
     createGrid(size, gridOwner);
-    placeShips(shipPositions, gridOwner);
 }
 
 function createGrid(size, gridOwner) {
@@ -37,6 +36,23 @@ function createGrid(size, gridOwner) {
     }
 }
 
+function updateShipsOnGameboard(shipPositions, gridOwner) {
+    const cells = document.querySelectorAll(`[data-owner="${gridOwner}"] .cell`);
+    cells.forEach(cell => {
+        cell.textContent = '';
+    });
+    displayShipsOnGameboard(shipPositions, gridOwner);
+}
+
+function displayShipsOnGameboard(shipPositions, gridOwner) {
+    shipPositions.forEach((position) => {
+        const [row, col] = position.split(',');
+        document.querySelector(
+            `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
+        ).textContent = 's';
+    });
+}
+
 function toggleGridBlockers() {
     playerOneGrid.classList.toggle('blocker');
     playerTwoGrid.classList.toggle('blocker');
@@ -52,14 +68,6 @@ function showPlayerTurn() {
     });
 }
 
-function placeShips(shipPositions, gridOwner) {
-    shipPositions.forEach((position) => {
-        const [row, col] = position.split(',');
-        document.querySelector(
-            `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
-        ).textContent = 's';
-    });
-}
 
 function markCell(coordinates, gridOwner, markContent) {
     const [row, col] = coordinates;
@@ -118,4 +126,6 @@ export default{
     toggleGridBlockers,
     showPlayerTurn,
     handleGameOver,
+    displayShipsOnGameboard,
+    updateShipsOnGameboard,
 };

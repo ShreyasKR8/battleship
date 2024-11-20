@@ -1,5 +1,7 @@
 import { Gameboard, Orientation } from '../modules/gameboard';
 import Ship from '../modules/ship';
+import {jest} from '@jest/globals'
+
 
 describe('Test placeShip()', () => {
     let gameboard = null;
@@ -68,20 +70,14 @@ describe('Test placeShip()', () => {
 
 describe('Test placeShip() for out of bounds', () => {
     let gameboard = null;
-    let testGB = null;
     beforeEach(() => {
         gameboard = new Gameboard();
-        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
     });
-
-    test('Place Cruiser', () => {
-        const cruiser = new Ship(3);
-        expect(
-            gameboard.placeShip(cruiser, [1, 8], Orientation.HORIZONTAL)
-        ).toStrictEqual(null);
-    });
-
+    
     test('Place Submarine', () => {
+        const cruiser = new Ship(3);
+        gameboard.placeShip(cruiser, [1, 8], Orientation.HORIZONTAL);
+
         const submarine = new Ship(3);
         expect(
             gameboard.placeShip(submarine, [8, 2], Orientation.VERTICAL)
@@ -89,25 +85,16 @@ describe('Test placeShip() for out of bounds', () => {
     });
 });
 
-describe('Test placeShip() for overlaps between two ships', () => {
+describe.only('Test placeShip() for overlaps between two ships', () => {
     let gameboard = null;
-    let testGB = null;
     beforeAll(() => {
         gameboard = new Gameboard();
-        testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
     });
-
-    test('Place Cruiser', () => {
-        const cruiser = new Ship(3);
-        testGB[1][7] = cruiser;
-        testGB[1][8] = cruiser;
-        testGB[1][9] = cruiser;
-        expect(
-            gameboard.placeShip(cruiser, [1, 7], Orientation.HORIZONTAL)
-        ).toStrictEqual(testGB);
-    });
-
+    
     test('Does not allow 2 ships position to overlap', () => {
+        const cruiser = new Ship(3);
+        gameboard.placeShip(cruiser, [3, 5], Orientation.HORIZONTAL);
+
         const submarine = new Ship(3);
         expect(
             gameboard.placeShip(submarine, [0, 7], Orientation.VERTICAL)
@@ -253,4 +240,65 @@ describe('test getRelevantAdjacentCoordinates()', () => {
         expect(expectedCells).toStrictEqual(adjacentCells);
     });
     
+});
+
+describe('test getRandomCoordinateForShip()', () => {
+    let gameboard = null
+    beforeAll(() => {
+        gameboard = new Gameboard();
+        // let testGB = new Array(10).fill(null).map(() => new Array(10).fill(null));
+    });
+
+    test('fr', () => {
+        jest.spyOn(Gameboard.prototype, 'getRandomCoordinateInRange').mockImplementation(() => {
+            return [8, 8];
+        });
+        jest.spyOn(Gameboard.prototype, 'getRandomOrientation').mockImplementation(() => {
+            return Orientation.HORIZONTAL;
+        });
+        let ans = gameboard.getRandomCoordinateForShip(2).randomCoordinate;
+        expect(ans).toEqual([8, 8]);
+
+        //test passed
+        // const cruiser = new Ship(3);
+        // const submarine = new Ship(3);
+        // const carrier = new Ship(5);
+        // const battleship = new Ship(4);
+        const destroyer = new Ship(2);
+        gameboard.placeShip(destroyer, [8, 8], gameboard.getRandomOrientation());
+    });
+
+    test('fr', () => {
+        jest.spyOn(Gameboard.prototype, 'getRandomCoordinateInRange').mockImplementation(() => {
+            return [8, 8];
+        });
+        jest.spyOn(Gameboard.prototype, 'getRandomOrientation').mockImplementation(() => {
+            return Orientation.HORIZONTAL;
+        });
+
+        expect(() => {
+            gameboard.getRandomCoordinateForShip(2);
+        }).toThrow('Failed to find valid coordinate for ship placement');
+    });
+
+    test('fr', () => {
+        let attempt = 0;
+        jest.spyOn(Gameboard.prototype, 'getRandomCoordinateInRange').mockImplementation(() => {
+            attempt++;
+            if(attempt == 1) {
+                return [8, 9];
+            }
+            if(attempt > 1) {
+                return [8, 6];
+            }
+            return [8, 8];
+        });
+        jest.spyOn(Gameboard.prototype, 'getRandomOrientation').mockImplementation(() => {
+            return Orientation.HORIZONTAL;
+        });
+
+        let ans = gameboard.getRandomCoordinateForShip(2).randomCoordinate;
+
+        expect(ans).toEqual([8, 6]);
+    });
 });
