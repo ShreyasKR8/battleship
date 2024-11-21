@@ -9,6 +9,11 @@ import {
     switchTurn,
 } from './modules/gameState.js';
 
+const startGameBtn = document.querySelector('.start-game-btn');
+const leaveGameBtn = document.querySelector('.leave-game-btn');
+const randomPlacementButton = document.querySelector('.randomise-btn');
+// const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
+
 //initialise the game
 const initialisedObjects = initialiseGame();
 const playerOneGameboard = initialisedObjects.playerOneGameboard;
@@ -62,8 +67,15 @@ function initialiseGame() {
     
     display.displayGameboard(undefined, 'player-two');
     display.displayShipsOnGameboard(playerTwoShipPositions, 'player-two');
+
+    display.toggleCellBlockers();
     
     return { playerOne, playerTwo, playerOneGameboard, playerTwoGameboard };
+}
+
+function reInitialiseGame() {
+    display.clearGameboards();
+    initialiseGame();
 }
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
@@ -138,7 +150,24 @@ function placeShipAtRandomCoordinate(ship, playerGameboard) {
     playerGameboard.placeShip(ship, randomCoordinate, randomOrientation);
 }
 
-const randomPlacementButton = document.querySelector('.cycle-random-placements');
+startGameBtn.addEventListener('click', () => {
+    display.toggleCellBlockers();
+    display.enableGridBlocker('player-one-gameboard');
+    display.disableGridBlocker('player-two-gameboard');
+
+    display.showPlayerTurn('player-one');
+
+    startGameBtn.disabled = true;
+    leaveGameBtn.disabled = false;
+});
+
+leaveGameBtn.addEventListener('click', () => {
+    startGameBtn.disabled = false;
+    leaveGameBtn.disabled = true;
+
+    reInitialiseGame();
+})
+
 randomPlacementButton.addEventListener('click', () => {
 
     playerOneGameboard.clearGameboard();

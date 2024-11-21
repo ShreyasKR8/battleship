@@ -8,6 +8,16 @@ function displayGameboard(size = 10, gridOwner) {
     createGrid(size, gridOwner);
 }
 
+function clearGameboards() {
+    while (playerOneGrid.firstChild) {
+        playerOneGrid.removeChild(playerOneGrid.lastChild);
+    }
+
+    while (playerTwoGrid.firstChild) {
+        playerTwoGrid.removeChild(playerTwoGrid.lastChild);
+    }
+}
+
 function createGrid(size, gridOwner) {
     let grid = null;
     if (gridOwner == 'player-one') {
@@ -54,11 +64,35 @@ function displayShipsOnGameboard(shipPositions, gridOwner) {
 }
 
 function toggleGridBlockers() {
-    playerOneGrid.classList.toggle('blocker');
-    playerTwoGrid.classList.toggle('blocker');
+    playerOneGrid.classList.toggle('grid-blocker');
+    playerTwoGrid.classList.toggle('grid-blocker');
 }
 
-function showPlayerTurn() {
+function enableGridBlocker(grid) {
+    const playerGrid = grid === 'player-one-gameboard' ? playerOneGrid : playerTwoGrid;
+    playerGrid.classList.add('grid-blocker');
+}
+
+function disableGridBlocker(gridOwner) {
+    const playerGrid = gridOwner === 'player-one' ? playerOneGrid : playerTwoGrid;
+    playerGrid.classList.remove('grid-blocker');
+}
+
+function toggleCellBlockers() {
+    const cells = playerTwoGrid.childNodes;
+    cells.forEach(cell => {
+        cell.classList.toggle('blocker');
+    });
+}
+
+function showPlayerTurn(player = '') {
+    if(player !== '') {
+        playerOneInstructions.forEach(playerOneInstruction => {
+            playerOneInstruction.classList.toggle('hidden');
+        });
+        return;
+    }
+
     playerOneInstructions.forEach(playerOneInstruction => {
         playerOneInstruction.classList.toggle('hidden');
     });
@@ -67,7 +101,6 @@ function showPlayerTurn() {
         playerTwoInstruction.classList.toggle('hidden');
     });
 }
-
 
 function markCell(coordinates, gridOwner, markContent) {
     const [row, col] = coordinates;
@@ -124,8 +157,12 @@ export default{
     displayGameboard,
     markCell,
     toggleGridBlockers,
+    disableGridBlocker,
+    enableGridBlocker,
+    toggleCellBlockers,
     showPlayerTurn,
     handleGameOver,
     displayShipsOnGameboard,
     updateShipsOnGameboard,
+    clearGameboards,
 };

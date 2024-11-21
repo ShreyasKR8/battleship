@@ -28,12 +28,41 @@ header h1 {
     letter-spacing: 1px;
 }
 
+.main-section {
+    display: flex;
+    /* flex-direction: ; */
+}
+
+.game-ctrl-section {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: 200px;
+    margin: auto 100px;
+}
+
+.game-ctrl-btn {
+    width: 150px;
+    margin: 10px auto;
+    height: 30px;
+    background-color: rgb(234, 234, 234);
+    border-radius: 2px;
+    border: 1px solid rgb(0, 0, 0);
+    font-size: 16px;
+}
+
+.game-ctrl-btn:not(:disabled):hover {
+    background-color: rgb(60, 60, 60);
+    color: white;
+}
+
 .gameboards {
     display: flex;
     flex-direction: row;
     gap: 50px;
     width: fit-content;
-    margin: 50px auto 30px;
+    margin: 50px 50px 30px;
+    /* border: 1px solid red; */
 }
 
 .player-one-instruction, 
@@ -72,9 +101,13 @@ header h1 {
 }
 
 /* for grids */
-.blocker {
+.grid-blocker {
     pointer-events: none;
     opacity: 0.3;
+}
+
+.blocker {
+    pointer-events: none;
 }
 
 /* for player turn instructions */
