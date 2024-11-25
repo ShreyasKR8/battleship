@@ -12,7 +12,7 @@ import {
 const startGameBtn = document.querySelector('.start-game-btn');
 const leaveGameBtn = document.querySelector('.leave-game-btn');
 const randomPlacementButton = document.querySelector('.randomise-btn');
-// const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
+const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
 
 //initialise the game
 const initialisedObjects = initialiseGame();
@@ -75,7 +75,13 @@ function initialiseGame() {
 
 function reInitialiseGame() {
     display.clearGameboards();
+
+    playerOneGameboard.clearGameboard();
+
+    playerTwoGameboard.clearGameboard();
+
     initialiseGame();
+
 }
 
 document.addEventListener('OnCellClicked', handleCellClicked); //received from UI on click
@@ -130,8 +136,9 @@ function isComputersTurn(isShipHit, hitCoordinates) {
 
 function playComputersTurn(isShipHit, hitCoordinates) {
     let randomCoordinate = [];
-    if(isShipHit) {
-        randomCoordinate = playerOneGameboard.getRandomAdjacentCoordinate(hitCoordinates);
+    if (isShipHit) {
+        randomCoordinate =
+            playerOneGameboard.getRandomAdjacentCoordinate(hitCoordinates);
     } else {
         randomCoordinate = playerOneGameboard.getRandomCoordinate();
     }
@@ -139,10 +146,13 @@ function playComputersTurn(isShipHit, hitCoordinates) {
     const mockEvent = {
         detail: {
             coordinates: randomCoordinate,
-            gridOwner: 'player-one'
-        }
+            gridOwner: 'player-one',
+        },
     };
-    setTimeout(() => handleCellClicked(mockEvent), 2000);  //delay to simulate "thinking".
+    setTimeout(() => {
+        handleCellClicked(mockEvent);
+        display.highlightAttackedCell(randomCoordinate, 'player-one');
+    }, 2000); //delay to simulate "thinking".
 }
 
 function placeShipAtRandomCoordinate(ship, playerGameboard) {
@@ -158,12 +168,18 @@ startGameBtn.addEventListener('click', () => {
     display.showPlayerTurn('player-one');
 
     startGameBtn.disabled = true;
+    randomPlacementButton.disabled = true;
     leaveGameBtn.disabled = false;
+    arrangeShipsBtn.disabled = true;
 });
 
 leaveGameBtn.addEventListener('click', () => {
     startGameBtn.disabled = false;
     leaveGameBtn.disabled = true;
+    randomPlacementButton.disabled = false;
+    arrangeShipsBtn.disabled = false;
+
+    display.hidePlayerInstructions();
 
     reInitialiseGame();
 })

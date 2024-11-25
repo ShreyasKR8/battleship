@@ -199,7 +199,8 @@ class Gameboard {
         return this.ships.every((ship) => ship.isSunkStatus);
     }
 
-    getShipPositions() {
+    getShipPositions(logShipPositions = false) {
+        if(logShipPositions) console.log(this.#shipPositions);
         return this.#shipPositions;
     }
 

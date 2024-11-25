@@ -102,6 +102,16 @@ function showPlayerTurn(player = '') {
     });
 }
 
+function hidePlayerInstructions() {
+    playerOneInstructions.forEach(playerOneInstruction => {
+        playerOneInstruction.classList.add('hidden');
+    });
+
+    playerTwoInstructions.forEach(playerTwoInstruction => {
+        playerTwoInstruction.classList.add('hidden');
+    });
+}
+
 function markCell(coordinates, gridOwner, markContent) {
     const [row, col] = coordinates;
     const cell = document.querySelector(
@@ -133,6 +143,7 @@ function handleCellClick(e) {
         Number(cell.getAttribute('data-col')),
     ];
     const gridOwner = cell.parentElement.getAttribute('data-owner');
+    highlightAttackedCell(coordinates, gridOwner);
     sendEventOnCellClicked(coordinates, gridOwner);
 }
 
@@ -153,6 +164,18 @@ function handleGameOver(winner) {
     winnerResults.textContent = `${winner} Won!`;
 }
 
+function highlightAttackedCell(hitCoordinate, gridOwner) {
+    const [row, col] = hitCoordinate;
+    document.querySelector(
+        `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
+    ).style.border = '3px solid blue';
+    setTimeout(() => {
+        document.querySelector(
+            `[data-owner="${gridOwner}"] .cell[data-row="${row}"][data-col="${col}"]`
+        ).style.border = '1px solid #7b7b7b';
+    }, 1500);
+}
+
 export default{
     displayGameboard,
     markCell,
@@ -161,8 +184,10 @@ export default{
     enableGridBlocker,
     toggleCellBlockers,
     showPlayerTurn,
+    hidePlayerInstructions,
     handleGameOver,
     displayShipsOnGameboard,
     updateShipsOnGameboard,
     clearGameboards,
+    highlightAttackedCell,
 };
