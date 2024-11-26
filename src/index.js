@@ -11,6 +11,8 @@ import {
 
 const startGameBtn = document.querySelector('.start-game-btn');
 const leaveGameBtn = document.querySelector('.leave-game-btn');
+leaveGameBtn.disabled = true;
+let playerLeft = false;
 const randomPlacementButton = document.querySelector('.randomise-btn');
 const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
 
@@ -25,6 +27,9 @@ function initialisePlayers() {
     const playerOne = new Player('player-one');
 
     const playerTwo = new Player('player-two');
+
+    setCurrentPlayer('player-one');
+
 
     return { playerOne, playerTwo };
 }
@@ -150,6 +155,9 @@ function playComputersTurn(isShipHit, hitCoordinates) {
         },
     };
     setTimeout(() => {
+        if(playerLeft) {
+            return;
+        }
         handleCellClicked(mockEvent);
         display.highlightAttackedCell(randomCoordinate, 'player-one');
     }, 2000); //delay to simulate "thinking".
@@ -164,13 +172,14 @@ startGameBtn.addEventListener('click', () => {
     display.toggleCellBlockers();
     display.enableGridBlocker('player-one-gameboard');
     display.disableGridBlocker('player-two-gameboard');
-
     display.showPlayerTurn('player-one');
 
     startGameBtn.disabled = true;
     randomPlacementButton.disabled = true;
     leaveGameBtn.disabled = false;
     arrangeShipsBtn.disabled = true;
+    playerLeft = false;
+
 });
 
 leaveGameBtn.addEventListener('click', () => {
@@ -178,6 +187,10 @@ leaveGameBtn.addEventListener('click', () => {
     leaveGameBtn.disabled = true;
     randomPlacementButton.disabled = false;
     arrangeShipsBtn.disabled = false;
+    playerLeft = true;
+    display.disableGridBlocker('player-one-gameboard');
+    display.disableGridBlocker('player-two-gameboard');
+
 
     display.hidePlayerInstructions();
 

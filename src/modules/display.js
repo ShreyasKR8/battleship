@@ -73,8 +73,8 @@ function enableGridBlocker(grid) {
     playerGrid.classList.add('grid-blocker');
 }
 
-function disableGridBlocker(gridOwner) {
-    const playerGrid = gridOwner === 'player-one' ? playerOneGrid : playerTwoGrid;
+function disableGridBlocker(grid) {
+    const playerGrid = grid === 'player-one-gameboard' ? playerOneGrid : playerTwoGrid;
     playerGrid.classList.remove('grid-blocker');
 }
 
@@ -88,7 +88,7 @@ function toggleCellBlockers() {
 function showPlayerTurn(player = '') {
     if(player !== '') {
         playerOneInstructions.forEach(playerOneInstruction => {
-            playerOneInstruction.classList.toggle('hidden');
+            playerOneInstruction.classList.remove('hidden');
         });
         return;
     }
