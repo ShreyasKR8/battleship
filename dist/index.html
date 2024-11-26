@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship</title>
+<script defer src="bundle.js"></script></head>
+<body>
+    <header>
+        <h1>Battleship</h1>
+    </header>
+    <section class="main-section">
+        <section class='game-ctrl-section'>
+            <button class='game-ctrl-btn start-game-btn'>Start Game</button>
+            <button class='game-ctrl-btn leave-game-btn' disabled>Leave Game</button>
+            <button class='game-ctrl-btn randomise-btn' title='Place ships at random locations'>Randomise</button>
+            <button class='game-ctrl-btn arrange-ships-btn' title='Manually select locations for your ships'>Arrange Ships</button>
+        </section>
+        <section class="gameboards">
+            <article>
+                <div class='player-one-gameboard player-grid'></div>
+                <p class='player-two-instruction hidden'>Computer's Turn</p>
+                <p class='player-two-instruction hidden'>Thinking....</p>
+            </article>
+            <article>
+                <div class='player-two-gameboard player-grid'></div>
+                <p class='player-one-instruction hidden'>Player One's Turn</p>
+                <p class='player-one-instruction hidden'>Attack!</p>
+            </article>
+        </section>
+    </section>
+    <section class='results'>
+        <h3 class='winner-results'></h3>
+    </section>
+</body>
+</html>
