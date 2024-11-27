@@ -18,8 +18,8 @@ const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
 
 //initialise the game
 const initialisedObjects = initialiseGame();
-const playerOneGameboard = initialisedObjects.playerOneGameboard;
-const playerTwoGameboard = initialisedObjects.playerTwoGameboard;
+let playerOneGameboard = initialisedObjects.playerOneGameboard;
+let playerTwoGameboard = initialisedObjects.playerTwoGameboard;
 
 setCurrentPlayer('player-one');
 
@@ -48,9 +48,9 @@ function initialiseGameboards(playerOne, playerTwo) {
     /* setup player two gameboard */
     const playerTwoGameboard = playerTwo.gameboard;
 
-    placeShipAtRandomCoordinate(new Ship(2), playerTwoGameboard);
-    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
-    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    // placeShipAtRandomCoordinate(new Ship(2), playerTwoGameboard);
+    // placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    // placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
     placeShipAtRandomCoordinate(new Ship(4), playerTwoGameboard);
     placeShipAtRandomCoordinate(new Ship(5), playerTwoGameboard);
 
@@ -79,13 +79,28 @@ function initialiseGame() {
 }
 
 function reInitialiseGame() {
+    //initialise buttons
+    startGameBtn.disabled = false;
+    leaveGameBtn.disabled = true;
+    randomPlacementButton.disabled = false;
+    arrangeShipsBtn.disabled = false;
+
+    playerLeft = true;
+
+    display.disableGridBlocker('player-one-gameboard');
+    display.disableGridBlocker('player-two-gameboard');
+    display.hidePlayerInstructions();
     display.clearGameboards();
+    display.clearResults();
 
     playerOneGameboard.clearGameboard();
 
     playerTwoGameboard.clearGameboard();
 
-    initialiseGame();
+    const reInitialisedObjects = initialiseGame();
+
+    playerOneGameboard = reInitialisedObjects.playerOneGameboard;
+    playerTwoGameboard = reInitialisedObjects.playerTwoGameboard;
 
 }
 
@@ -160,7 +175,7 @@ function playComputersTurn(isShipHit, hitCoordinates) {
         }
         handleCellClicked(mockEvent);
         display.highlightAttackedCell(randomCoordinate, 'player-one');
-    }, 2000); //delay to simulate "thinking".
+    }, 1000); //delay to simulate "thinking".
 }
 
 function placeShipAtRandomCoordinate(ship, playerGameboard) {
@@ -168,37 +183,27 @@ function placeShipAtRandomCoordinate(ship, playerGameboard) {
     playerGameboard.placeShip(ship, randomCoordinate, randomOrientation);
 }
 
-startGameBtn.addEventListener('click', () => {
+function beginPlay() {
     display.toggleCellBlockers();
     display.enableGridBlocker('player-one-gameboard');
     display.disableGridBlocker('player-two-gameboard');
     display.showPlayerTurn('player-one');
-
+    
     startGameBtn.disabled = true;
     randomPlacementButton.disabled = true;
     leaveGameBtn.disabled = false;
     arrangeShipsBtn.disabled = true;
+
     playerLeft = false;
+}
 
-});
+startGameBtn.addEventListener('click', beginPlay);
 
-leaveGameBtn.addEventListener('click', () => {
-    startGameBtn.disabled = false;
-    leaveGameBtn.disabled = true;
-    randomPlacementButton.disabled = false;
-    arrangeShipsBtn.disabled = false;
-    playerLeft = true;
-    display.disableGridBlocker('player-one-gameboard');
-    display.disableGridBlocker('player-two-gameboard');
+leaveGameBtn.addEventListener('click', reInitialiseGame);
 
+randomPlacementButton.addEventListener('click', arrangeShipsAtRandom);
 
-    display.hidePlayerInstructions();
-
-    reInitialiseGame();
-})
-
-randomPlacementButton.addEventListener('click', () => {
-
+function arrangeShipsAtRandom() {
     playerOneGameboard.clearGameboard();
 
     placeShipAtRandomCoordinate(new Ship(2), playerOneGameboard);
@@ -210,4 +215,5 @@ randomPlacementButton.addEventListener('click', () => {
     const shipPositions = playerOneGameboard.getShipPositions();
 
     display.updateShipsOnGameboard(shipPositions, 'player-one');
-});
+}
+

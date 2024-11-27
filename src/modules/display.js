@@ -176,6 +176,11 @@ function highlightAttackedCell(hitCoordinate, gridOwner) {
     }, 1500);
 }
 
+function clearResults() {
+    const winnerResults = document.querySelector('.winner-results');
+    winnerResults.textContent = '';
+}
+
 export default{
     displayGameboard,
     markCell,
@@ -190,4 +195,5 @@ export default{
     updateShipsOnGameboard,
     clearGameboards,
     highlightAttackedCell,
+    clearResults,
 };

@@ -48,6 +48,7 @@ class Gameboard {
         this.#reservedPositions.clear();
         this.#shipPositions.clear();
         this.#shipToAdjacentCellsMap.clear();
+        // this.ships.clear();
     }
 
     getAdjacentCells(position, adjacentDeltas) {
@@ -135,6 +136,7 @@ class Gameboard {
                 });
                 colNumber++;
             }
+            console.log(ship)
             this.ships.push(ship);
         } else if (orientation == Orientation.VERTICAL) {
             for (let i = 0; i < shipLength; i++) {
