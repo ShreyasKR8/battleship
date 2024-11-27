@@ -48,9 +48,9 @@ function initialiseGameboards(playerOne, playerTwo) {
     /* setup player two gameboard */
     const playerTwoGameboard = playerTwo.gameboard;
 
-    // placeShipAtRandomCoordinate(new Ship(2), playerTwoGameboard);
-    // placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
-    // placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(2), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
+    placeShipAtRandomCoordinate(new Ship(3), playerTwoGameboard);
     placeShipAtRandomCoordinate(new Ship(4), playerTwoGameboard);
     placeShipAtRandomCoordinate(new Ship(5), playerTwoGameboard);
 
@@ -175,7 +175,7 @@ function playComputersTurn(isShipHit, hitCoordinates) {
         }
         handleCellClicked(mockEvent);
         display.highlightAttackedCell(randomCoordinate, 'player-one');
-    }, 1000); //delay to simulate "thinking".
+    }, 2000); //delay to simulate "thinking".
 }
 
 function placeShipAtRandomCoordinate(ship, playerGameboard) {
