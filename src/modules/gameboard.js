@@ -114,7 +114,6 @@ class Gameboard {
 
     placeShip(ship, position, orientation) {
         if (!this.isValidPosition(ship.size, position, orientation)) {
-            // console.log(this.gameboard);
             return null;
         }
 
@@ -136,7 +135,6 @@ class Gameboard {
                 });
                 colNumber++;
             }
-            console.log(ship)
             this.ships.push(ship);
         } else if (orientation == Orientation.VERTICAL) {
             for (let i = 0; i < shipLength; i++) {
@@ -250,7 +248,6 @@ class Gameboard {
         return Math.random() < 0.5
             ? Orientation.HORIZONTAL
             : Orientation.VERTICAL;
-        // return Orientation.HORIZONTAL;
     }
 
     getRandomCoordinateInRange(rangeX, rangeY) {

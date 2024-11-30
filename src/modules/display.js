@@ -3,12 +3,22 @@ const playerOneInstructions = document.querySelectorAll(`.player-one-instruction
 
 const playerOneGrid = document.querySelector(`.player-one-gameboard`);
 const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
+const playerOneGridCells = Array.from({ length: 10 }, () => Array(10).fill(null));
+
+const Orientation = Object.freeze({
+    HORIZONTAL: 'horizontal',
+    VERTICAL: 'vertical',
+});
+
+let orientation = 'horizontal';
+
+const shipSizes = [5, 4, 3, 3, 2];
 
 function displayGameboard(size = 10, gridOwner) {
     createGrid(size, gridOwner);
 }
 
-function clearGameboards() {
+function clearAllGameboards() {
     while (playerOneGrid.firstChild) {
         playerOneGrid.removeChild(playerOneGrid.lastChild);
     }
@@ -16,6 +26,13 @@ function clearGameboards() {
     while (playerTwoGrid.firstChild) {
         playerTwoGrid.removeChild(playerTwoGrid.lastChild);
     }
+}
+
+function clearGameboardContent(gridOwner) {
+    const cells = document.querySelectorAll(`[data-owner="${gridOwner}"] .cell`);
+    cells.forEach(cell => {
+        cell.textContent = '';
+    });
 }
 
 function createGrid(size, gridOwner) {
@@ -181,6 +198,41 @@ function clearResults() {
     winnerResults.textContent = '';
 }
 
+function initialisePlacingShips(playerGameboard, gridOwner) {
+    const gridCells = document.querySelectorAll(`[data-owner="${gridOwner}"] .cell`);
+    gridCells.forEach(cell => {
+        const row = parseInt(cell.getAttribute('data-row'), 10);
+        const col = parseInt(cell.getAttribute('data-col'), 10);
+        playerOneGridCells[row][col] = cell;
+        cell.removeEventListener('click', handleCellClick);
+        cell.addEventListener('click', handlePlaceShip);
+        cell.addEventListener('mouseover', showShipPlacement);
+    });
+    playerGameboard.clearGameboard();
+    clearGameboardContent('player-one');
+}
+
+function handlePlaceShip() {
+
+}
+
+function showShipPlacement(e) {
+    const cell = e.currentTarget;
+    let [coordinateX, coordinateY] = [
+        Number(cell.getAttribute('data-row')),
+        Number(cell.getAttribute('data-col')),
+    ];
+    // const gridOwner = cell.parentElement.getAttribute('data-owner');
+    const currentShipSize = shipSizes[0];
+    for(let i = 0; i < currentShipSize; i++) {
+        if(orientation == Orientation.HORIZONTAL) {
+            let dY = coordinateY + i;
+            let chosenCell = playerOneGridCells[coordinateX][dY];
+            chosenCell.style.backgroundColor = 'green';
+        }
+    }
+}
+
 export default{
     displayGameboard,
     markCell,
@@ -193,7 +245,8 @@ export default{
     handleGameOver,
     displayShipsOnGameboard,
     updateShipsOnGameboard,
-    clearGameboards,
+    clearAllGameboards,
     highlightAttackedCell,
     clearResults,
+    initialisePlacingShips,
 };

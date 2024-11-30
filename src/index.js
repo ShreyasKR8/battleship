@@ -90,7 +90,7 @@ function reInitialiseGame() {
     display.disableGridBlocker('player-one-gameboard');
     display.disableGridBlocker('player-two-gameboard');
     display.hidePlayerInstructions();
-    display.clearGameboards();
+    display.clearAllGameboards();
     display.clearResults();
 
     playerOneGameboard.clearGameboard();
@@ -202,6 +202,10 @@ startGameBtn.addEventListener('click', beginPlay);
 leaveGameBtn.addEventListener('click', reInitialiseGame);
 
 randomPlacementButton.addEventListener('click', arrangeShipsAtRandom);
+
+arrangeShipsBtn.addEventListener('click', () => {
+    display.initialisePlacingShips(playerOneGameboard, 'player-one');
+});
 
 function arrangeShipsAtRandom() {
     playerOneGameboard.clearGameboard();
