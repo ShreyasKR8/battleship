@@ -18,7 +18,7 @@ const arrangeShipsBtn = document.querySelector('.arrange-ships-btn');
 
 //initialise the game
 const initialisedObjects = initialiseGame();
-let playerOneGameboard = initialisedObjects.playerOneGameboard;
+export let playerOneGameboard = initialisedObjects.playerOneGameboard;
 let playerTwoGameboard = initialisedObjects.playerTwoGameboard;
 
 setCurrentPlayer('player-one');
@@ -78,7 +78,7 @@ function initialiseGame() {
     return { playerOne, playerTwo, playerOneGameboard, playerTwoGameboard };
 }
 
-function reInitialiseGame() {
+export function reInitialiseGame() {
     //initialise buttons
     startGameBtn.disabled = false;
     leaveGameBtn.disabled = true;
@@ -205,6 +205,12 @@ randomPlacementButton.addEventListener('click', arrangeShipsAtRandom);
 
 arrangeShipsBtn.addEventListener('click', () => {
     display.initialisePlacingShips(playerOneGameboard, 'player-one');
+
+    startGameBtn.disabled = true;
+    randomPlacementButton.disabled = true;
+    leaveGameBtn.disabled = true;
+    arrangeShipsBtn.disabled = true;
+
 });
 
 function arrangeShipsAtRandom() {
@@ -221,3 +227,9 @@ function arrangeShipsAtRandom() {
     display.updateShipsOnGameboard(shipPositions, 'player-one');
 }
 
+export function changeCtrlBtnsState() {
+    startGameBtn.disabled = false;
+    randomPlacementButton.disabled = false;
+    leaveGameBtn.disabled = true;
+    arrangeShipsBtn.disabled = false;
+}

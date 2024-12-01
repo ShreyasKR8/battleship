@@ -1,18 +1,26 @@
+import { reInitialiseGame, changeCtrlBtnsState, playerOneGameboard } from '../index.js'
+import Ship from './ship.js';
+// console.log(reInitialiseGame());
+
 const playerTwoInstructions = document.querySelectorAll(`.player-two-instruction`);
 const playerOneInstructions = document.querySelectorAll(`.player-one-instruction`);
 
 const playerOneGrid = document.querySelector(`.player-one-gameboard`);
 const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
+
+const gameCtrlButtonSection = document.querySelector('.game-ctrl-section');
+
 const playerOneGridCells = Array.from({ length: 10 }, () => Array(10).fill(null));
+let lastChosenCells = [];
 
 const Orientation = Object.freeze({
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
 });
 
-let orientation = 'horizontal';
+let selectedOrientation = 'horizontal';
 
-const shipSizes = [5, 4, 3, 3, 2];
+let shipSizes = [5, 4, 3, 3, 2];
 
 function displayGameboard(size = 10, gridOwner) {
     createGrid(size, gridOwner);
@@ -199,6 +207,8 @@ function clearResults() {
 }
 
 function initialisePlacingShips(playerGameboard, gridOwner) {
+    lastChosenCells = [];
+    shipSizes = [5, 4, 3, 3, 2];
     const gridCells = document.querySelectorAll(`[data-owner="${gridOwner}"] .cell`);
     gridCells.forEach(cell => {
         const row = parseInt(cell.getAttribute('data-row'), 10);
@@ -210,10 +220,90 @@ function initialisePlacingShips(playerGameboard, gridOwner) {
     });
     playerGameboard.clearGameboard();
     clearGameboardContent('player-one');
+
+    //add confirm and cancel buttons
+    const confirmBtn = document.createElement('button');
+    confirmBtn.innerHTML = 'Confirm';
+    confirmBtn.classList.add('game-ctrl-btn');
+    confirmBtn.classList.add('confirm-placement-btn');
+    confirmBtn.setAttribute('title', 'Confirm ship positions');
+    confirmBtn.addEventListener('click', confirmShipsPlacement);
+    confirmBtn.disabled = true;
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.innerHTML = 'Cancel';
+    cancelBtn.classList.add('game-ctrl-btn');
+    cancelBtn.classList.add('cancel-placement-btn');
+    cancelBtn.setAttribute('title', 'Cancel placing ships');
+    cancelBtn.addEventListener('click', cancelShipsPlacement);
+
+    const placementBtnsDiv = document.createElement('div');
+    placementBtnsDiv.classList.add('placement-ctrl-btns');
+
+    placementBtnsDiv.appendChild(confirmBtn);
+    placementBtnsDiv.appendChild(cancelBtn);
+
+    gameCtrlButtonSection.appendChild(placementBtnsDiv);
+
+    document.addEventListener('keydown', handleKeyPress);
 }
 
-function handlePlaceShip() {
+function handleKeyPress(e) {
+    if (e.key === 'q') {
+        switchShipOrientation();
+    }
+}
 
+function switchShipOrientation() {
+    selectedOrientation =
+        selectedOrientation === Orientation.HORIZONTAL
+            ? Orientation.VERTICAL
+            : Orientation.HORIZONTAL;
+}
+
+function confirmShipsPlacement(e) {
+    const confirmBtn = e.currentTarget;
+    gameCtrlButtonSection.removeChild(confirmBtn.parentElement);
+    changeCtrlBtnsState();
+    document.removeEventListener('keydown', handleKeyPress);
+
+    const gridCells = document.querySelectorAll(`[data-owner="player-one"] .cell`);
+    gridCells.forEach(cell => {
+        // cell.addEventListener('click', handleCellClick);
+        cell.removeEventListener('click', handlePlaceShip);
+        cell.removeEventListener('mouseover', showShipPlacement);
+    });
+}
+
+function cancelShipsPlacement(e) {
+    const cancelBtn = e.currentTarget;
+    reInitialiseGame();
+    gameCtrlButtonSection.removeChild(cancelBtn.parentElement); //remove placementBtnsDiv
+}
+
+function handlePlaceShip(e) {
+    const chosenCell = e.currentTarget;
+    let [coordinateX, coordinateY] = [
+        Number(chosenCell.getAttribute('data-row')),
+        Number(chosenCell.getAttribute('data-col')),
+    ];
+
+    const currentShipSize = shipSizes[0];
+    if(!playerOneGameboard.isValidPosition(currentShipSize, [coordinateX, coordinateY], selectedOrientation)) {
+        return;
+    
+    }
+    shipSizes.shift();
+
+    if(shipSizes.length === 0) {
+        const confirmBtn = document.querySelector('.confirm-placement-btn');
+        confirmBtn.disabled = false;
+    }
+
+    console.log('placeShip');
+
+    const shipCells = playerOneGameboard.placeShip(new Ship(currentShipSize), [coordinateX, coordinateY], selectedOrientation);
+    displayShipsOnGameboard(shipCells, 'player-one');
 }
 
 function showShipPlacement(e) {
@@ -222,13 +312,29 @@ function showShipPlacement(e) {
         Number(cell.getAttribute('data-row')),
         Number(cell.getAttribute('data-col')),
     ];
-    // const gridOwner = cell.parentElement.getAttribute('data-owner');
+
+    lastChosenCells.forEach(cell => {
+        cell.style.backgroundColor = 'white';
+    });
+
     const currentShipSize = shipSizes[0];
+    if(!playerOneGameboard.isValidPosition(currentShipSize, [coordinateX, coordinateY], selectedOrientation)) {
+        cell.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+        lastChosenCells.push(cell);
+        return;
+    }
+
     for(let i = 0; i < currentShipSize; i++) {
-        if(orientation == Orientation.HORIZONTAL) {
+        if(selectedOrientation == Orientation.HORIZONTAL) {
             let dY = coordinateY + i;
             let chosenCell = playerOneGridCells[coordinateX][dY];
-            chosenCell.style.backgroundColor = 'green';
+            chosenCell.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+            lastChosenCells.push(chosenCell);
+        } else {
+            let dX = coordinateX + i;
+            let chosenCell = playerOneGridCells[dX][coordinateY];
+            chosenCell.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+            lastChosenCells.push(chosenCell);
         }
     }
 }

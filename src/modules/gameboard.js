@@ -120,11 +120,13 @@ class Gameboard {
         let [rowNumber, colNumber] = position;
         let shipLength = ship.size;
         let allAdjacentCellsOfShip = new Set();
+        const currentShipCells = new Set();
 
         if (orientation == Orientation.HORIZONTAL) {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
                 this.#shipPositions.add([rowNumber, colNumber].toString());
+                currentShipCells.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells(
                     [rowNumber, colNumber],
                     this.#adjacentCellDeltas
@@ -140,6 +142,7 @@ class Gameboard {
             for (let i = 0; i < shipLength; i++) {
                 this.gameboard[rowNumber][colNumber] = ship;
                 this.#shipPositions.add([rowNumber, colNumber].toString());
+                currentShipCells.add([rowNumber, colNumber].toString());
                 let adjacentCells = this.getAdjacentCells(
                     [rowNumber, colNumber],
                     this.#adjacentCellDeltas
@@ -164,7 +167,7 @@ class Gameboard {
         });
 
         this.#shipToAdjacentCellsMap.set(ship, allAdjacentCellsOfShip);
-        return this.gameboard;
+        return currentShipCells;
     }
 
     receiveAttack(hitCoordinate) {
