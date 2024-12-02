@@ -15,6 +15,7 @@
             <button class='game-ctrl-btn leave-game-btn' disabled>Leave Game</button>
             <button class='game-ctrl-btn randomise-btn' title='Place ships at random locations'>Randomise</button>
             <button class='game-ctrl-btn arrange-ships-btn' title='Manually select locations for your ships'>Arrange Ships</button>
+            <button class='game-ctrl-btn instructions-btn' title='Show game instructions'>Instructions</button>
         </section>
         <section class="gameboards">
             <article>
@@ -28,9 +29,35 @@
                 <p class='player-one-instruction hidden'>Attack!</p>
             </article>
         </section>
+        <article class='game-instructions'></article>
     </section>
     <section class='results'>
         <h3 class='winner-results'></h3>
     </section>
+    <dialog class="game-instructions-dialog">
+        <header>
+            <h2>Instructions</h2>
+            <!-- <button class="close-dialog-btn">&times;</button> -->
+        </header>
+        <ul class="instructions-list">
+            <li>
+                <b>Objective</b>: Sink all of your opponent's ships before they sink yours. Players take turns guessing the location of the opponent's ships by selecting cells to "attack."
+            </li>
+            <li>
+                <b>Placing Ships</b>: At the start, each player places their ships on their own grid, either manually or randomly. Ships must be placed horizontally or vertically and cannot overlap or extend beyond the grid.
+            </li>
+            <li>
+                <b>Gameplay</b>: On your turn:
+                <ul class='gameplay-rules'>
+                    <li>Choose a cell on your opponent's board to attack.</li>
+                    <li>If you hit a ship, it is marked, and you can attempt to sink it by hitting all its parts.</li>
+                    <li>The game ends when all parts of one player's ships are destroyed.</li>
+                </ul>
+            </li>
+        </ul>
+        <footer class='dialog-footer'>
+            <button class='game-ctrl-btn close-dialog-btn'>Close</button>
+        </footer>
+    </dialog>
 </body>
 </html>

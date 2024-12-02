@@ -1,6 +1,5 @@
 import { reInitialiseGame, changeCtrlBtnsState, playerOneGameboard } from '../index.js'
 import Ship from './ship.js';
-// console.log(reInitialiseGame());
 
 const playerTwoInstructions = document.querySelectorAll(`.player-two-instruction`);
 const playerOneInstructions = document.querySelectorAll(`.player-one-instruction`);
@@ -9,6 +8,9 @@ const playerOneGrid = document.querySelector(`.player-one-gameboard`);
 const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
 
 const gameCtrlButtonSection = document.querySelector('.game-ctrl-section');
+const showInstructionsBtn = document.querySelector('.instructions-btn');
+const instructionsDialog = document.querySelector('.game-instructions-dialog');
+const hideInstructionsBtn = document.querySelector('.close-dialog-btn');
 
 const playerOneGridCells = Array.from({ length: 10 }, () => Array(10).fill(null));
 let lastChosenCells = [];
@@ -21,6 +23,15 @@ const Orientation = Object.freeze({
 let selectedOrientation = 'horizontal';
 
 let shipSizes = [5, 4, 3, 3, 2];
+
+
+showInstructionsBtn.addEventListener('click', () => {
+    instructionsDialog.showModal();
+})
+
+hideInstructionsBtn.addEventListener('click', () => {
+    instructionsDialog.close();
+})
 
 function displayGameboard(size = 10, gridOwner) {
     createGrid(size, gridOwner);
