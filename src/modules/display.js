@@ -7,10 +7,11 @@ const playerOneInstructions = document.querySelectorAll(`.player-one-instruction
 const playerOneGrid = document.querySelector(`.player-one-gameboard`);
 const playerTwoGrid = document.querySelector(`.player-two-gameboard`);
 
-const gameCtrlButtonSection = document.querySelector('.game-ctrl-section');
+// const gameCtrlButtonSection = document.querySelector('.game-ctrl-section');
 const showInstructionsBtn = document.querySelector('.instructions-btn');
 const instructionsDialog = document.querySelector('.game-instructions-dialog');
 const hideInstructionsBtn = document.querySelector('.close-dialog-btn');
+const placeInstructionSection = document.querySelector('.placement-instructions-section');
 
 const playerOneGridCells = Array.from({ length: 10 }, () => Array(10).fill(null));
 let lastChosenCells = [];
@@ -249,14 +250,16 @@ function initialisePlacingShips(playerGameboard, gridOwner) {
     cancelBtn.addEventListener('click', cancelShipsPlacement);
 
     const placementBtnsDiv = document.createElement('div');
-    placementBtnsDiv.classList.add('placement-ctrl-btns');
+    placementBtnsDiv.classList.add('placement-ctrl-section');
 
     placementBtnsDiv.appendChild(confirmBtn);
     placementBtnsDiv.appendChild(cancelBtn);
 
-    gameCtrlButtonSection.appendChild(placementBtnsDiv);
+    document.body.appendChild(placementBtnsDiv);
 
     document.addEventListener('keydown', handleKeyPress);
+    
+    placeInstructionSection.hidden = false;
 }
 
 function handleKeyPress(e) {
@@ -274,7 +277,7 @@ function switchShipOrientation() {
 
 function confirmShipsPlacement(e) {
     const confirmBtn = e.currentTarget;
-    gameCtrlButtonSection.removeChild(confirmBtn.parentElement);
+    document.body.removeChild(confirmBtn.parentElement);
     changeCtrlBtnsState();
     document.removeEventListener('keydown', handleKeyPress);
 
@@ -284,12 +287,15 @@ function confirmShipsPlacement(e) {
         cell.removeEventListener('click', handlePlaceShip);
         cell.removeEventListener('mouseover', showShipPlacement);
     });
+
+    placeInstructionSection.hidden = true;
 }
 
 function cancelShipsPlacement(e) {
     const cancelBtn = e.currentTarget;
     reInitialiseGame();
-    gameCtrlButtonSection.removeChild(cancelBtn.parentElement); //remove placementBtnsDiv
+    document.body.removeChild(cancelBtn.parentElement); //remove placementBtnsDiv
+    placeInstructionSection.hidden = true;
 }
 
 function handlePlaceShip(e) {
