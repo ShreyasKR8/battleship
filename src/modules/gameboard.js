@@ -48,7 +48,7 @@ class Gameboard {
         this.#reservedPositions.clear();
         this.#shipPositions.clear();
         this.#shipToAdjacentCellsMap.clear();
-        // this.ships.clear();
+        this.ships = [];
     }
 
     getAdjacentCells(position, adjacentDeltas) {
@@ -203,7 +203,7 @@ class Gameboard {
     }
 
     getShipPositions(logShipPositions = false) {
-        if(logShipPositions) console.log(this.#shipPositions);
+        if (logShipPositions) console.log(this.#shipPositions);
         return this.#shipPositions;
     }
 
